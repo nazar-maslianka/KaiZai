@@ -17,38 +17,38 @@ public sealed class CategoriesRepositoryTests : IClassFixture<DbFixture>
     }
     
     [Fact]
-    public async Task Get_categories_for_user_success()
+    public async Task Get_categories_for_profile_success()
     {
         //Arrange
-        var testUserId  = new Guid(ConfigurationValues.TestUserId);
+        var testProfileId  = new Guid(ConfigurationValues.TestProfileId);
         //Act
-        var testCategories = await _categoriesRepository.GetAllAsync(c => c.UserId.Equals(testUserId));
+        var testCategories = await _categoriesRepository.GetAllAsync(c => c.ProfileId.Equals(testProfileId));
         //Assert
         Assert.NotEmpty(testCategories);
     }
 
     [Fact]
-    public async Task Get_category_by_id_for_user_success()
+    public async Task Get_category_by_id_for_profile_success()
     {
         //Arrange
-        var testUserId  = new Guid(ConfigurationValues.TestUserId);
+        var testProfileId  = new Guid(ConfigurationValues.TestProfileId);
         var testCategoryId  = new Guid(ConfigurationValues.TestCategory);
         //Act
-        var testCategory = await _categoriesRepository.GetOneAsync(x => x.Id.Equals(testCategoryId) && x.UserId.Equals(testUserId));
+        var testCategory = await _categoriesRepository.GetOneAsync(x => x.Id.Equals(testCategoryId) && x.ProfileId.Equals(testProfileId));
         //Assert
         Assert.NotNull(testCategory);
         Assert.Equal(testCategory.Id, testCategoryId);
-        Assert.Equal(testCategory.UserId, testUserId);
+        Assert.Equal(testCategory.ProfileId, testProfileId);
     }
 
     [Fact]
-    public async Task Create_category_for_user_success()
+    public async Task Create_category_for_profile_success()
     {
         //Arrange
-        var testUserId  = new Guid(ConfigurationValues.TestUserId);
+        var testProfileId  = new Guid(ConfigurationValues.TestProfileId);
         var testCategory = new Category
         {
-            UserId = testUserId,
+            ProfileId = testProfileId,
             Name = "Test_Groceries",
             CategoryType = CategoryType.Expense
         };
@@ -59,13 +59,13 @@ public sealed class CategoriesRepositoryTests : IClassFixture<DbFixture>
     }
 
     [Fact]
-    public async Task Update_category_for_user_success()
+    public async Task Update_category_for_profile_success()
     {
         //Arrange
-        var testUserId  = new Guid(ConfigurationValues.TestUserId);
+        var testProfileId  = new Guid(ConfigurationValues.TestProfileId);
         var testCategory = new Category
         {
-            UserId = testUserId,
+            ProfileId = testProfileId,
             Name = "Test_Groceries",
             CategoryType = CategoryType.Expense
         };
@@ -80,13 +80,13 @@ public sealed class CategoriesRepositoryTests : IClassFixture<DbFixture>
     }
     
     [Fact]
-    public async Task Update_fake_category_for_user_not_updated()
+    public async Task Update_fake_category_for_profile_not_updated()
     {
         //Arrange
-        var testUserId  = new Guid(ConfigurationValues.TestUserId);
+        var testProfileId  = new Guid(ConfigurationValues.TestProfileId);
         var testCategory = new Category
         {
-            UserId = testUserId,
+            ProfileId = testProfileId,
             Name = "Test_Groceries",
             CategoryType = CategoryType.Expense
         };
@@ -102,10 +102,10 @@ public sealed class CategoriesRepositoryTests : IClassFixture<DbFixture>
     public async Task Delete_category_by_id_success()
     {
         //Arrange
-        var testUserId  = new Guid(ConfigurationValues.TestUserId);
+        var testProfileId  = new Guid(ConfigurationValues.TestProfileId);
         var testCategory = new Category
         {
-            UserId = testUserId,
+            ProfileId = testProfileId,
             Name = "Test_Groceries",
             CategoryType = CategoryType.Expense
         };
