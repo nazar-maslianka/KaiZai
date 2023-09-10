@@ -1,4 +1,3 @@
-using KaiZai.Service.Categories.API.ActionFilters;
 using KaiZai.Service.Categories.API.Data.Repositories;
 using KaiZai.Service.Common.MongoDataAccessRepository.Settings;
 
@@ -15,7 +14,7 @@ public static class ServiceExtensions
 
     public static IServiceCollection AddRepositories(this IServiceCollection services)
     {
-        services.AddScoped<ICategoriesRepository, CategoriesRepository>();
+        services.AddScoped<ICategoryRepository, CategoryRepository>();
         return services;
     }
 
