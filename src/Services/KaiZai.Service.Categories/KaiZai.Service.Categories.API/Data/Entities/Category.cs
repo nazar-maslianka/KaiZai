@@ -1,5 +1,3 @@
-using System.ComponentModel.DataAnnotations;
-
 namespace KaiZai.Service.Categories.API.Data.Entities;
 
 public sealed class Category : IEntity

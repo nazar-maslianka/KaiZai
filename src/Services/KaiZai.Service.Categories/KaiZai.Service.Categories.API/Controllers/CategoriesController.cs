@@ -55,7 +55,7 @@ public sealed class CategoriesController : ControllerBase
             
         }
 
-        _publishEndpoint.Publish(new CategoryCreated(categoryItem.Id, categoryItem.ProfileId, categoryItem.Name));
+        await _publishEndpoint.Publish(new CategoryCreated(categoryItem.Id, categoryItem.ProfileId, categoryItem.Name, categoryItem.CategoryType));
         return CreatedAtAction(nameof(GetCategoryOfProfileById), new { id = categoryItem.Id }, null);
     }
 
