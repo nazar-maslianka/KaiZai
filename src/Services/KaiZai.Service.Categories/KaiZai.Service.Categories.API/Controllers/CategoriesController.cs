@@ -2,6 +2,8 @@ using KaiZai.Service.Categories.API.Common;
 using KaiZai.Service.Categories.API.Data.Entities;
 using KaiZai.Service.Categories.API.Data.Repositories;
 using KaiZai.Service.Categories.API.DTOs;
+using KaiZai.Service.Categories.Contracts;
+using MassTransit;
 using Microsoft.AspNetCore.Mvc;
 
 namespace KaiZai.Service.Categories.API.Controllers;
@@ -12,12 +14,16 @@ public sealed class CategoriesController : ControllerBase
 {
     private readonly ILogger<CategoriesController> _logger;
     private readonly ICategoryRepository _categoryRepository;
+    private readonly IPublishEndpoint _publishEndpoint;
 
-    public CategoriesController(ILogger<CategoriesController> logger, ICategoryRepository categoryRepository)
+    public CategoriesController(ILogger<CategoriesController> logger, 
+        ICategoryRepository categoryRepository,
+        IPublishEndpoint publishEndpoint)
     {
         //TODO: later implement logging through serilog
         _logger = logger;
         _categoryRepository = categoryRepository;
+        _publishEndpoint = publishEndpoint;
     }
 
     [Route("{id}")]
@@ -39,11 +45,17 @@ public sealed class CategoriesController : ControllerBase
 
     [HttpPost]
     [ProducesResponseType( StatusCodes.Status201Created)]
-    public async Task<IActionResult> CreateCategory(Guid userId, [FromBody] CreateCategoryDTO createCategoryDTO)
+    public async Task<IActionResult> CreateCategory(Guid profileId, [FromBody] CreateCategoryDTO createCategoryDTO)
     {
-        var categoryItem = createCategoryDTO.ToCategory(userId);
+        var categoryItem = createCategoryDTO.ToCategory(profileId);
         await _categoryRepository.CreateAsync(categoryItem);
         
+        if (categoryItem.Id == Guid.Empty)
+        {
+            
+        }
+
+        _publishEndpoint.Publish(new CategoryCreated(categoryItem.Id, categoryItem.ProfileId, categoryItem.Name));
         return CreatedAtAction(nameof(GetCategoryOfProfileById), new { id = categoryItem.Id }, null);
     }
 
