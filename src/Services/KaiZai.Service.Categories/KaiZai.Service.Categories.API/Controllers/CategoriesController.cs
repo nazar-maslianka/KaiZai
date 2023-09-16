@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace KaiZai.Service.Categories.API.Controllers;
 
+//TODO: check all methods states and possible situations later!
 [ApiController]
 [Route("api/profile/{profileId}/[controller]")]
 public sealed class CategoriesController : ControllerBase
@@ -20,22 +21,36 @@ public sealed class CategoriesController : ControllerBase
         ICategoryRepository categoryRepository,
         IPublishEndpoint publishEndpoint)
     {
-        //TODO: later implement logging through serilog
         _logger = logger;
         _categoryRepository = categoryRepository;
         _publishEndpoint = publishEndpoint;
     }
 
+    [HttpGet]
+    [ProducesResponseType(typeof(IEnumerable<CategoryDTO>), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<IEnumerable<CategoryDTO>>> GetCategoriesOfProfile(Guid profileId)
+    {
+        var categories = await _categoryRepository
+            .GetAllAsync(categ => categ.ProfileId == profileId);
+
+        var categoriesDTO = categories
+            .Select(c => c.ToCategoryDTO());
+        return Ok(categoriesDTO);
+    }
+
     [Route("{id}")]
     [HttpGet]
-    [ServiceFilter(typeof(ValidationFilterAttribute))]
     [ProducesResponseType(typeof(Category), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<CategoryDTO>> GetCategoryOfProfileById(Guid profileId, Guid id)
     {
-        var category = await _categoryRepository.GetOneAsync(x => x.ProfileId == profileId && x.Id == id);
+        var category = await _categoryRepository.GetOneAsync(categ => categ.ProfileId == profileId && categ.Id == id);
         if (category == null)
         {
+            _logger.LogInformation("Category with id:{@id} not found in the database",
+                id);
+            
             return NotFound();
         }
 
@@ -44,19 +59,75 @@ public sealed class CategoriesController : ControllerBase
     }
 
     [HttpPost]
-    [ProducesResponseType( StatusCodes.Status201Created)]
-    public async Task<IActionResult> CreateCategory(Guid profileId, [FromBody] CreateCategoryDTO createCategoryDTO)
+    [ServiceFilter(typeof(ValidationFilterAttribute))]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
+    public async Task<IActionResult> CreateCategory(Guid profileId, [FromBody] CreateUpdateCategoryDTO createCategoryDTO)
     {
-        var categoryItem = createCategoryDTO.ToCategory(profileId);
-        await _categoryRepository.CreateAsync(categoryItem);
+        var category = createCategoryDTO.ToCategory(profileId);
+        await _categoryRepository.CreateAsync(category);
         
-        if (categoryItem.Id == Guid.Empty)
+        if (category.Id == Guid.Empty)
         {
+            _logger.LogError("Category not created");
             
+            return BadRequest();
         }
 
-        await _publishEndpoint.Publish(new CategoryCreated(categoryItem.Id, categoryItem.ProfileId, categoryItem.Name, categoryItem.CategoryType));
-        return CreatedAtAction(nameof(GetCategoryOfProfileById), new { id = categoryItem.Id }, null);
+        await _publishEndpoint.Publish(new CategoryCreated(category.Id, category.ProfileId, category.Name, category.CategoryType));
+        return NoContent();
     }
 
+    [Route("{id}")]
+    [HttpPut]
+    [ServiceFilter(typeof(ValidationFilterAttribute))]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status409Conflict)]
+    public async Task<IActionResult> UpdateCategory(Guid profileId, Guid id, [FromBody] CreateUpdateCategoryDTO createCategoryDTO)
+    {
+        if (createCategoryDTO == null)
+        {
+            _logger.LogError("Object: @{createCategoryDTO} sent from client is null.", createCategoryDTO);
+            return BadRequest("CreateUpdateCategoryDTO object is null");
+        }
+        if (!ModelState.IsValid)
+        {
+            _logger.LogError("Invalid model state for the CreateUpdateCategoryDTO object");
+            return UnprocessableEntity(ModelState);
+        }
+
+        var category = createCategoryDTO.ToCategory(profileId, id);
+
+        var categoryUpdatedResult = await _categoryRepository.UpdateAsync(category);
+
+        if(categoryUpdatedResult == null || categoryUpdatedResult?.ModifiedCount == 0)
+        {
+              _logger.LogError("Category with id:{@id} not updated",
+                id);
+            return Conflict();
+        }
+
+        await _publishEndpoint.Publish(new CategoryUpdated(category.Id, category.ProfileId,  category.Name, category.CategoryType));
+        return NoContent();
+    }
+
+    [Route("{id}")]
+    [HttpDelete]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> DeleteCategory(Guid id, Guid profileId)
+    {
+        var category = await _categoryRepository.GetOneAsync(id);
+        if (category == null)
+        {
+              _logger.LogInformation("Category with id:{@id} not found in the database",
+                id);
+            
+            return NotFound();
+        }
+        var categoryDeletedResult = await _categoryRepository.RemoveAsync(id);
+        await _publishEndpoint.Publish(new CategoryDeleted(id, profileId));
+        return NoContent();
+    }
 }
