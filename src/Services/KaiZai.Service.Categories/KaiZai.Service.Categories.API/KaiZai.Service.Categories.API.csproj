@@ -19,4 +19,7 @@
     <ProjectReference Include="..\KaiZai.Service.Categories.Contracts\KaiZai.Service.Categories.Contracts.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <InternalsVisibleTo Include="KaiZai.Service.Categories.API.IntegrationTests" />
+  </ItemGroup>    
 </Project>
