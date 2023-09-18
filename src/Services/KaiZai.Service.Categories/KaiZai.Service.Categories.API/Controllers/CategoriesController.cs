@@ -65,6 +65,17 @@ public sealed class CategoriesController : ControllerBase
     [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
     public async Task<IActionResult> CreateCategory(Guid profileId, [FromBody] CreateUpdateCategoryDTO createCategoryDTO)
     {
+        if (createCategoryDTO == null)
+        {
+            _logger.LogError("Object: @{createCategoryDTO} sent from client is null.", createCategoryDTO);
+            return BadRequest("CreateUpdateCategoryDTO object is null");
+        }
+        if (!ModelState.IsValid)
+        {
+            _logger.LogError("Invalid model state for the CreateUpdateCategoryDTO object");
+            return UnprocessableEntity(ModelState);
+        }
+
         var category = createCategoryDTO.ToCategory(profileId);
         await _categoryRepository.CreateAsync(category);
         
@@ -83,12 +94,12 @@ public sealed class CategoriesController : ControllerBase
     [HttpPut]
     [ServiceFilter(typeof(ValidationFilterAttribute))]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
-    [ProducesResponseType(StatusCodes.Status409Conflict)]
-    public async Task<IActionResult> UpdateCategory(Guid profileId, Guid id, [FromBody] CreateUpdateCategoryDTO createCategoryDTO)
+    [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
+    public async Task<IActionResult> UpdateCategory(Guid profileId, Guid id, [FromBody] CreateUpdateCategoryDTO updateCategoryDTO)
     {
-        if (createCategoryDTO == null)
+        if (updateCategoryDTO == null)
         {
-            _logger.LogError("Object: @{createCategoryDTO} sent from client is null.", createCategoryDTO);
+            _logger.LogError("Object: @{updateCategoryDTO} sent from client is null.", updateCategoryDTO);
             return BadRequest("CreateUpdateCategoryDTO object is null");
         }
         if (!ModelState.IsValid)
@@ -97,16 +108,9 @@ public sealed class CategoriesController : ControllerBase
             return UnprocessableEntity(ModelState);
         }
 
-        var category = createCategoryDTO.ToCategory(profileId, id);
+        var category = updateCategoryDTO.ToCategory(profileId, id);
 
-        var categoryUpdatedResult = await _categoryRepository.UpdateAsync(category);
-
-        if(categoryUpdatedResult == null || categoryUpdatedResult?.ModifiedCount == 0)
-        {
-              _logger.LogError("Category with id:{@id} not updated",
-                id);
-            return Conflict();
-        }
+        await _categoryRepository.UpdateAsync(category);
 
         await _publishEndpoint.Publish(new CategoryUpdated(category.Id, category.ProfileId,  category.Name, category.CategoryType));
         return NoContent();
@@ -126,7 +130,7 @@ public sealed class CategoriesController : ControllerBase
             
             return NotFound();
         }
-        var categoryDeletedResult = await _categoryRepository.RemoveAsync(id);
+        await _categoryRepository.RemoveAsync(id);
         await _publishEndpoint.Publish(new CategoryDeleted(id, profileId));
         return NoContent();
     }
