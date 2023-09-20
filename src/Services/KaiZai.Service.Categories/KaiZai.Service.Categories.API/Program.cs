@@ -10,7 +10,7 @@ var logger = new LoggerConfiguration()
     .CreateLogger();
 
 builder.Logging.AddSerilog(logger);
-builder.Services.AddMongoDatabase();
+builder.Services.AddMongoDatabase(builder.Configuration);
 builder.Services.AddMassTransitWithRabbitMq();
 builder.Services.AddRepositories();
 builder.Services.AddFilters();
