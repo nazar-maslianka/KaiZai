@@ -1,5 +1,4 @@
 using KaiZai.Service.Common.MongoDataAccessRepository.Settings;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization;
@@ -9,22 +8,19 @@ namespace KaiZai.Service.Common.MongoDataAccessRepository;
 
 public static class Extensions
 {
-     /// <summary>
-    /// Set up settings for using Mongo database in project.
-    /// Important! Do not forget to configure ServiceSettings and MongoConnectionSettings sections in launch.json of your project.
+    /// <summary>
+    /// Injects Mongo database to services of project.
     ///</summary>
-    public static IServiceCollection AddMongoDatabase(this IServiceCollection services)
+    /// <param name="serviceSettings">Settings with service name for Mongo collection</param>
+    /// <param name="mongoConnectionSettings">Settings for connecting to Mongo database</param>
+    public static void AddMongoDatabase(this IServiceCollection services, ServiceSettings serviceSettings, MongoConnectionSettings mongoConnectionSettings)
     {
         BsonSerializer.RegisterSerializer(new GuidSerializer(BsonType.String));
         BsonSerializer.RegisterSerializer(new DateTimeOffsetSerializer(BsonType.String));
-        services.AddSingleton(serviceProvider => 
+        services.AddSingleton(() => 
         {
-            var configuration = serviceProvider.GetService<IConfiguration>();
-            var serviceSettings = configuration.GetSection(nameof(ServiceSettings)).Get<ServiceSettings>();
-            var mongoConnectionSettings = configuration.GetSection(nameof(MongoConnectionSettings)).Get<MongoConnectionSettings>();
             var mongoClient = new MongoClient(mongoConnectionSettings.ConnectionString);
             return mongoClient.GetDatabase(serviceSettings.ServiceName);
         });
-        return services;
     }
 }
