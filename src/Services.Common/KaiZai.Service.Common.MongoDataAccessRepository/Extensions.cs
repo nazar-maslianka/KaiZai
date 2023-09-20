@@ -17,11 +17,9 @@ public static class Extensions
     {
         BsonSerializer.RegisterSerializer(new GuidSerializer(BsonType.String));
         BsonSerializer.RegisterSerializer(new DateTimeOffsetSerializer(BsonType.String));
-        services.AddSingleton(() => 
-        {
-            var mongoClient = new MongoClient(mongoConnectionSettings.ConnectionString);
-            return mongoClient.GetDatabase(serviceSettings.ServiceName);
-        });
+        services.AddSingleton<IMongoDatabase>(
+            new MongoClient(mongoConnectionSettings.ConnectionString).GetDatabase(serviceSettings.ServiceName)
+        );
         return services;
     }
 }
