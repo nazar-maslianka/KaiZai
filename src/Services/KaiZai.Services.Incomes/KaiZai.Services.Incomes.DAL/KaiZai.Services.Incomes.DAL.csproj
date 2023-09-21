@@ -8,5 +8,6 @@
 
   <ItemGroup>
     <PackageReference Include="KaiZai.MongoDataAccessAbstraction" Version="1.0.1" />
+    <PackageReference Include="KaiZai.Common.Types" Version="1.0.0" />
   </ItemGroup>
 </Project>

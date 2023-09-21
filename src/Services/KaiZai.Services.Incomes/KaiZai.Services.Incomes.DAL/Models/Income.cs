@@ -1,5 +1,3 @@
-using KaiZai.MongoDataAccessAbstraction.Repository;
-
 namespace KaiZai.Services.Incomes.DAL.Models;
 
 public class Income : IEntity
