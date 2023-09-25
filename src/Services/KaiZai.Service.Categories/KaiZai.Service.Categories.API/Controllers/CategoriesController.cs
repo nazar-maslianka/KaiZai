@@ -48,8 +48,8 @@ public sealed class CategoriesController : ControllerBase
         var category = await _categoryRepository.GetOneAsync(categ => categ.ProfileId == profileId && categ.Id == id);
         if (category == null)
         {
-            _logger.LogInformation("Category with id:{@id} not found in the database",
-                id);
+            _logger.LogInformation("Category with id:{@id} for profile:{@profileId} not found in the database",
+                id, profileId);
             
             return NotFound();
         }
@@ -123,15 +123,15 @@ public sealed class CategoriesController : ControllerBase
     public async Task<IActionResult> DeleteCategory(Guid id, Guid profileId)
     {
         var category = await _categoryRepository.GetOneAsync(id);
-        if (category == null)
+        if (category == null || category.ProfileId != profileId)
         {
-              _logger.LogInformation("Category with id:{@id} not found in the database",
-                id);
+              _logger.LogInformation("Category with id:{@id} for profile:{@profileId} not found in the database",
+                id, profileId);
             
             return NotFound();
         }
         await _categoryRepository.RemoveAsync(id);
-        await _publishEndpoint.Publish(new CategoryDeleted(id, profileId));
+        await _publishEndpoint.Publish(new CategoryDeleted(id, profileId, category.CategoryType));
         return NoContent();
     }
 }
