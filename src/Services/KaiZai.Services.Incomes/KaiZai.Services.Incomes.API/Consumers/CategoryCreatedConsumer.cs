@@ -1,21 +1,29 @@
 using KaiZai.Service.Categories.Contracts;
+using KaiZai.Services.Incomes.BAL.Services;
 using MassTransit;
 
 namespace KaiZai.Services.Incomes.API.Consumers;
 
 public sealed class CategoryCreatedConsumer : IConsumer<CategoryCreated>
 {
-    public CategoryCreatedConsumer()
+    private readonly ICategoryConsumersService _categoryConsumersService;
+
+    public CategoryCreatedConsumer(ICategoryConsumersService categoryConsumersService)
     {
-        
+        _categoryConsumersService = categoryConsumersService;
     }
 
-    //Test method
     //TODO: change logic later
-    public Task Consume(ConsumeContext<CategoryCreated> context)
+    public async Task Consume(ConsumeContext<CategoryCreated> context)
     {
-        Console.WriteLine($"Id: {context.Message.Id} \r\n ProfileId: {context.Message.ProfileId} \r\n Name: {context.Message.Name} \r\n CategoryType: {context.Message.CategoryType}");
+        var message = context.Message;
 
-        return Task.FromResult("1");
+
+        //if ()
+        //{
+        //    
+        //}
+
+        await _categoryConsumersService.CreateCategoryAsync(message);
     }
 }

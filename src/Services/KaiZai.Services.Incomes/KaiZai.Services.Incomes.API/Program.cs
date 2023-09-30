@@ -1,13 +1,16 @@
-using KaiZai.Service.Common.MessageExchangeBaseConfigurator.MassTransit;
 using KaiZai.Services.Incomes.API.Clients;
+using KaiZai.Services.Incomes.API.Extensions;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
-
+var logger = new LoggerConfiguration()
+    .ReadFrom.Configuration(builder.Configuration)
+    .CreateLogger();
 // Add services to the container.
-builder.Services.AddMassTransitWithRabbitMq();
+builder.Services.AddSerilog(logger);
+builder.Services.ConfigureMassTransit(builder.Configuration);
+builder.Services.AddCategoriesClientHttpHandler();
 builder.Services.AddControllers();
-
-CategoriesClient.AddCategoriesClient(builder.Services);
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
