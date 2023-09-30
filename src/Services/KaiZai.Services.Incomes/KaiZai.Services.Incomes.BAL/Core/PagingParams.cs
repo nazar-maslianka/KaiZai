@@ -3,7 +3,7 @@ namespace KaiZai.Services.Incomes.BAL.Core;
 /// <summary>
 /// Represents an object for manipulating pagination process.
 /// </summary>
-public sealed class PagingParams
+public sealed record PagingParams
 {
     private const int MaxPageSize = 25;
     public int PageNumber { get; set; } = 1;
