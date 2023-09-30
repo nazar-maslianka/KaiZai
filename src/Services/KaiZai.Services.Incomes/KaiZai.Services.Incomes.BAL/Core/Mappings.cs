@@ -1,3 +1,4 @@
+using KaiZai.Service.Categories.Contracts;
 using KaiZai.Services.Incomes.BAL.DTOs;
 using KaiZai.Services.Incomes.DAL.Models;
 
@@ -10,9 +11,31 @@ public static class Mappings
         return new Category
         {
             Id = categoryDTO.Id,
-            Name = categoryDTO.Name,
             ProfileId = categoryDTO.ProfileId,
+            Name = categoryDTO.Name,
             CategoryType = categoryDTO.CategoryType
+        };
+    }
+
+    public static Category ToCategory(this CategoryCreated categoryCreated)
+    {
+        return new Category
+        {
+            Id = categoryCreated.Id,
+            ProfileId = categoryCreated.ProfileId,
+            Name = categoryCreated.Name,
+            CategoryType = categoryCreated.CategoryType
+        };
+    }
+
+    public static Category ToCategory(this CategoryUpdated categoryUpdated)
+    {
+        return new Category
+        {
+            Id = categoryUpdated.Id,
+            ProfileId = categoryUpdated.ProfileId,
+            Name = categoryUpdated.Name,
+            CategoryType = categoryUpdated.CategoryType
         };
     }
 }
