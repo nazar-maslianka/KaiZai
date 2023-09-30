@@ -9,7 +9,6 @@ var logger = new LoggerConfiguration()
     .ReadFrom.Configuration(builder.Configuration)
     .CreateLogger();
 
-//builder.Logging.AddSerilog(logger);
 builder.Services.AddSerilog(logger);
 builder.Services.ConfigureMongoDatabase(builder.Configuration);
 builder.Services.ConfigureMassTransit(builder.Configuration);
