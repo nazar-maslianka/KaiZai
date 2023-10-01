@@ -9,17 +9,14 @@ namespace KaiZai.Services.Incomes.BAL.Services;
 
 public sealed class CategoryConsumersService : ICategoryConsumersService
 {
-    private readonly ILogger<CategoryConsumersService> _logger;
     private readonly ICategoryRepository _categoryRepository;
     
-    public CategoryConsumersService(ILogger<CategoryConsumersService> logger,
-        ICategoryRepository categoryRepository)
+    public CategoryConsumersService(ICategoryRepository categoryRepository)
     {
-        _logger = logger;
         _categoryRepository = categoryRepository;
     }
 
-    public async Task CreateCategoryAsync(CategoryCreated categoryCreated)
+    public async Task<Result> CreateCategoryAsync(CategoryCreated categoryCreated)
     {
         if (categoryCreated == null)
         {
@@ -29,15 +26,15 @@ public sealed class CategoryConsumersService : ICategoryConsumersService
         var existingCategory = await _categoryRepository.GetAsync(categoryCreated.Id);
         if (existingCategory != null)
         {
-            _logger.LogInformation($"Category with ID: {categoryCreated.Id} already present in database");
-            return;
+            return Result.Failure($"Category with ID: {categoryCreated.Id} already present in database");
         }
 
         var category = categoryCreated.ToCategory();
         await _categoryRepository.CreateAsync(category);
+        return Result.Success();
     }
 
-    public async Task UpdateCategoryAsync(CategoryUpdated categoryUpdated)
+    public async Task<Result> UpdateCategoryAsync(CategoryUpdated categoryUpdated)
     {
         if (categoryUpdated == null)
         {
@@ -48,17 +45,18 @@ public sealed class CategoryConsumersService : ICategoryConsumersService
         if (existingCategory == null)
         {
             await _categoryRepository.CreateAsync(categoryUpdated.ToCategory());
-            return;
+            return Result.Success();
         }
 
         existingCategory.Name = categoryUpdated.Name;
         existingCategory.CategoryType = categoryUpdated.CategoryType;
 
-        //TODO: add features for updating only fields by some filter!!!
+        //TODO: think about updating only some fields by filter!!!
         await _categoryRepository.UpdateAsync(existingCategory);
+        return Result.Success();
     }
 
-    public async Task DeleteCategoryAsync(CategoryDeleted categoryDeleted)
+    public async Task<Result> DeleteCategoryAsync(CategoryDeleted categoryDeleted)
     {
         if (categoryDeleted == null)
         {
@@ -68,10 +66,10 @@ public sealed class CategoryConsumersService : ICategoryConsumersService
         var existingCategory = await _categoryRepository.GetAsync(categoryDeleted.Id);
         if (existingCategory == null)
         {
-            _logger.LogInformation($"Category with ID: {categoryDeleted.Id} not present in database");
-            return;
+            return Result.Failure($"Category with ID: {categoryDeleted.Id} not present in database");
         }
         
         await _categoryRepository.RemoveAsync(categoryDeleted.Id);
+        return Result.Success();
     }
 }

@@ -5,7 +5,7 @@ namespace KaiZai.Services.Incomes.BAL.Services;
 
 public interface ICategoryConsumersService
 {
-    Task CreateCategoryAsync(CategoryCreated categoryCreated);
-    Task UpdateCategoryAsync(CategoryUpdated categoryUpdated);
-    Task DeleteCategoryAsync(CategoryDeleted categoryDeleted);
+    Task<Result> CreateCategoryAsync(CategoryCreated categoryCreated);
+    Task<Result> UpdateCategoryAsync(CategoryUpdated categoryUpdated);
+    Task<Result> DeleteCategoryAsync(CategoryDeleted categoryDeleted);
 }
