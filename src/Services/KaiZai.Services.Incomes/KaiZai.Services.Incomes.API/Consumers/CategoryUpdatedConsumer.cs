@@ -1,30 +1,34 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using KaiZai.Service.Categories.Contracts;
 using KaiZai.Services.Incomes.BAL.Services;
 using MassTransit;
 
 namespace KaiZai.Services.Incomes.API.Consumers;
 
-public sealed class CategoryCreatedConsumer : IConsumer<CategoryCreated>
+public sealed class CategoryUpdatedConsumer: IConsumer<CategoryUpdated>
 {
-    private readonly ILogger<CategoryCreatedConsumer> _logger;
+    private readonly ILogger<CategoryDeletedConsumer> _logger;
     private readonly ICategoryConsumersService _categoryConsumersService;
 
-    public CategoryCreatedConsumer(
-        ILogger<CategoryCreatedConsumer> logger,
+    public CategoryUpdatedConsumer(
+        ILogger<CategoryDeletedConsumer> logger,
         ICategoryConsumersService categoryConsumersService)
     {
         _logger = logger;
         _categoryConsumersService = categoryConsumersService;
     }
 
-    public async Task Consume(ConsumeContext<CategoryCreated> context)
+    public async Task Consume(ConsumeContext<CategoryUpdated> context)
     {
         var message = context.Message;
 
-        var result = await _categoryConsumersService.CreateCategoryAsync(message);
+        var result = await _categoryConsumersService.UpdateCategoryAsync(message);
         if (!result.IsSuccess)
         {
             _logger.LogWarning(result.Error);
         }
-    }
+    } 
 }
