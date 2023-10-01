@@ -10,6 +10,8 @@ var logger = new LoggerConfiguration()
 builder.Services.AddSerilog(logger);
 builder.Services.ConfigureMassTransit(builder.Configuration);
 builder.Services.AddCategoriesClientHttpHandler();
+builder.Services.AddRepositories();
+builder.Services.AddBusinessServices();
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
