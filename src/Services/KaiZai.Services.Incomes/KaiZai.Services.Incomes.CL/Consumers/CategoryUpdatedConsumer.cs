@@ -1,12 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using KaiZai.Service.Categories.Contracts;
-using KaiZai.Services.Incomes.BAL.Services;
-using MassTransit;
-
-namespace KaiZai.Services.Incomes.API.Consumers;
+namespace KaiZai.Services.Incomes.CL.Consumers;
 
 public sealed class CategoryUpdatedConsumer: IConsumer<CategoryUpdated>
 {

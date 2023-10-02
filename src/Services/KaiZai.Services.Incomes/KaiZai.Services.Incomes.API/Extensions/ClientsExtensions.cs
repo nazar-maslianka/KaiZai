@@ -1,4 +1,4 @@
-using KaiZai.Services.Incomes.API.Clients;
+using KaiZai.Services.Incomes.CL.Clients;
 using Polly;
 using Polly.Timeout;
 

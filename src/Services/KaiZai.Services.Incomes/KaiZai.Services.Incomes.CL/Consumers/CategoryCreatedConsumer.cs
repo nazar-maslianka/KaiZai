@@ -1,8 +1,4 @@
-using KaiZai.Service.Categories.Contracts;
-using KaiZai.Services.Incomes.BAL.Services;
-using MassTransit;
-
-namespace KaiZai.Services.Incomes.API.Consumers;
+namespace KaiZai.Services.Incomes.CL.Consumers;
 
 public sealed class CategoryCreatedConsumer : IConsumer<CategoryCreated>
 {
@@ -19,6 +15,7 @@ public sealed class CategoryCreatedConsumer : IConsumer<CategoryCreated>
 
     public async Task Consume(ConsumeContext<CategoryCreated> context)
     {
+        _logger.LogInformation("Started");
         var message = context.Message;
 
         var result = await _categoryConsumersService.CreateCategoryAsync(message);

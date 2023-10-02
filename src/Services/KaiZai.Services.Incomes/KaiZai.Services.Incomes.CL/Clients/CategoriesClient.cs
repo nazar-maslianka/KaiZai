@@ -1,8 +1,7 @@
+using System.Net.Http.Json;
 using KaiZai.Services.Incomes.BAL.DTOs;
-using Polly;
-using Polly.Timeout;
 
-namespace KaiZai.Services.Incomes.API.Clients;
+namespace KaiZai.Services.Incomes.CL.Clients;
 
 public sealed class CategoriesClient
 {

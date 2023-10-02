@@ -2,11 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using MassTransit;
-using KaiZai.Service.Categories.Contracts;
-using KaiZai.Services.Incomes.BAL.Services;
 
-namespace KaiZai.Services.Incomes.API.Consumers;
+
+namespace KaiZai.Services.Incomes.CL.Consumers;
 
 public sealed class CategoryDeletedConsumer : IConsumer<CategoryDeleted>
 {
