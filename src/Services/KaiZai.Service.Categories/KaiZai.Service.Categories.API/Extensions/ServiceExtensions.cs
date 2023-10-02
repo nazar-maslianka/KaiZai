@@ -20,7 +20,7 @@ public static class ServiceExtensions
     {
         var serviceSettings = configuration.GetSection(ServiceSettingsSection).Get<ServiceSettingsForMessageExchanging>();
         var rabbitMQSettings = configuration.GetSection(nameof(RabbitMQSettings)).Get<RabbitMQSettings>();
-        return services.AddMassTransitWithBaseSetUp(serviceSettings, rabbitMQSettings);
+        return services.AddMassTransitCoreSetUp(serviceSettings, rabbitMQSettings);
     }
     public static IServiceCollection AddRepositories(this IServiceCollection services)
     {
