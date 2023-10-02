@@ -18,7 +18,7 @@ public static class Extensions
     /// <param name="rabbitMQSettings">The settings related to the RabbitMQ message broker.</param>
     /// <param name="rabbitMqAdditionalConfigurations">An optional action for additional MassTransit and RabbitMQ configurations.</param>
     /// <param name="assembliesConsumers">An array of assemblies containing MassTransit consumers. 
-    /// If not provided, the entry assembly will be used.
+    /// If not provided, the entry assembly will be used as default value.
     /// Attention!!! Default value will be null when called from unmanaged code.
     /// </param>
     /// <returns>The modified <see cref="IServiceCollection"/> with MassTransit configuration.</returns>
@@ -26,11 +26,11 @@ public static class Extensions
         ServiceSettings serviceSettings, 
         RabbitMQSettings rabbitMQSettings,
         Action<IBusRegistrationContext, IRabbitMqBusFactoryConfigurator>? rabbitMqAdditionalConfigurations = null,
-        params Assembly[]? assembliesConsumers)
+        params Assembly[] assembliesConsumers)
     {
         collection.AddMassTransit(configure => 
         {
-            assembliesConsumers = assembliesConsumers ?? new Assembly[] { Assembly.GetEntryAssembly() };
+            assembliesConsumers = assembliesConsumers.Any() == true ? assembliesConsumers : new Assembly[] { Assembly.GetEntryAssembly() };
             configure.AddConsumers(assemblies: assembliesConsumers);
             configure.UsingRabbitMq((context, configurator) => 
             {
