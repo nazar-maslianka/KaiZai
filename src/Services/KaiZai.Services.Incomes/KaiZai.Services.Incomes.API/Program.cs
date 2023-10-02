@@ -1,14 +1,16 @@
-using KaiZai.Services.Incomes.API.Clients;
 using KaiZai.Services.Incomes.API.Extensions;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.ConfigureMongoDatabase(builder.Configuration);
+builder.Services.ConfigureMassTransit(builder.Configuration);
+
 var logger = new LoggerConfiguration()
     .ReadFrom.Configuration(builder.Configuration)
     .CreateLogger();
 // Add services to the container.
 builder.Services.AddSerilog(logger);
-builder.Services.ConfigureMassTransit(builder.Configuration);
 builder.Services.AddCategoriesClientHttpHandler();
 builder.Services.AddRepositories();
 builder.Services.AddBusinessServices();
