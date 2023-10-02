@@ -11,24 +11,27 @@ namespace KaiZai.Service.Common.MessageExchangeBaseConfigurator.MassTransit;
 public static class Extensions
 {
     /// <summary>
-    /// Adds MassTransit and its dependencies to the collection with some predefined settings.
-    ///</summary>
-    /// <remarks> 
-    /// Default settings defined for RabbitMQ: Host, ConfigureEndpoints, UseMessageRetry. 
-    /// Important! Do not forget to configure ServiceSettings and RabbitMQSettings sections in your project.
-    /// </remarks>
-    /// <param name="collection"></param>
-    /// <param name="serviceSettings">Settings with service name</param>
-    /// <param name="rabbitMQSettings">Settings for creating a connection to RabbitMQ</param>
-    /// <param name="rabbitMqAdditionalConfigurations">The configuration callback for additional settings in RabbitMQ.</param>
-    public static IServiceCollection AddMassTransitWithBaseSetUp(this IServiceCollection collection,
+    /// Adds MassTransit configuration with a base setup to the specified <see cref="IServiceCollection"/>.
+    /// </summary>
+    /// <param name="collection">The <see cref="IServiceCollection"/> to which MassTransit configuration will be added.</param>
+    /// <param name="serviceSettings">The settings related to the microservice.</param>
+    /// <param name="rabbitMQSettings">The settings related to the RabbitMQ message broker.</param>
+    /// <param name="rabbitMqAdditionalConfigurations">An optional action for additional MassTransit and RabbitMQ configurations.</param>
+    /// <param name="assembliesConsumers">An array of assemblies containing MassTransit consumers. 
+    /// If not provided, the entry assembly will be used.
+    /// Attention!!! Default value will be null when called from unmanaged code.
+    /// </param>
+    /// <returns>The modified <see cref="IServiceCollection"/> with MassTransit configuration.</returns>
+    public static IServiceCollection AddMassTransitCoreSetUp(this IServiceCollection collection,
         ServiceSettings serviceSettings, 
         RabbitMQSettings rabbitMQSettings,
-        Action<IBusRegistrationContext, IRabbitMqBusFactoryConfigurator> rabbitMqAdditionalConfigurations = null)
+        Action<IBusRegistrationContext, IRabbitMqBusFactoryConfigurator>? rabbitMqAdditionalConfigurations = null,
+        params Assembly[]? assembliesConsumers)
     {
         collection.AddMassTransit(configure => 
         {
-            configure.AddConsumers(Assembly.GetEntryAssembly());
+            assembliesConsumers = assembliesConsumers ?? new Assembly[] { Assembly.GetEntryAssembly() };
+            configure.AddConsumers(assemblies: assembliesConsumers);
             configure.UsingRabbitMq((context, configurator) => 
             {
                 if (serviceSettings == null)
