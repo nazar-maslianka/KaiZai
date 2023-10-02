@@ -1,21 +1,13 @@
-using KaiZai.Service.Categories.API.Extensions;
 using KaiZai.Service.Common.MessageExchangeBaseConfigurator.MassTransit;
-using Serilog;
+using KaiZai.Services.Incomes.API.Clients;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-var logger = new LoggerConfiguration()
-    .ReadFrom.Configuration(builder.Configuration)
-    .CreateLogger();
-
-builder.Services.AddSerilog(logger);
-builder.Services.ConfigureMongoDatabase(builder.Configuration);
-builder.Services.ConfigureMassTransit(builder.Configuration);
-builder.Services.AddRepositories();
-builder.Services.AddFilters();
+builder.Services.AddMassTransitWithRabbitMq();
 builder.Services.AddControllers();
 
+CategoriesClient.AddCategoriesClient(builder.Services);
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -26,18 +18,14 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
-    app.UseSwaggerUI(s => 
-    {
-        s.SwaggerEndpoint("/swagger/v1/swagger.json", "KaiZai Categories API v1");
-    });
+    app.UseSwaggerUI();
 }
 
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
 
-app.UseSerilogRequestLogging();
-
 app.MapControllers();
 
 app.Run();
+

@@ -1,19 +1,17 @@
-using KaiZai.Service.Categories.API.Data.Entities;
-using KaiZai.Service.Categories.API.Data.Enums;
 using KaiZai.Service.Categories.API.Data.Repositories;
 
-namespace KaiZai.Service.Categories.UnitTests.Data;
+namespace KaiZai.Service.Categories.UnitTests.API.Data;
 
-public sealed class CategoriesRepositoryTests : IClassFixture<DbFixture>
+public sealed class CategoryRepositoryTests : IClassFixture<DbFixture>
 {
     private readonly DbFixture _dbFixture;
-    private readonly CategoriesRepository _categoriesRepository;
+    private readonly CategoryRepository _categoryRepository;
 
-    public CategoriesRepositoryTests(DbFixture dbFixture)
+    public CategoryRepositoryTests(DbFixture dbFixture)
     {
         _dbFixture = dbFixture;
         _dbFixture.Seed();
-        _categoriesRepository = new CategoriesRepository(mongoDatabase: _dbFixture.database);
+        _categoryRepository = new CategoryRepository(mongoDatabase: _dbFixture.database);
     }
     
     [Fact]
@@ -22,7 +20,7 @@ public sealed class CategoriesRepositoryTests : IClassFixture<DbFixture>
         //Arrange
         var testProfileId  = new Guid(ConfigurationValues.TestProfileId);
         //Act
-        var testCategories = await _categoriesRepository.GetAllAsync(c => c.ProfileId.Equals(testProfileId));
+        var testCategories = await _categoryRepository.GetAllAsync(c => c.ProfileId.Equals(testProfileId));
         //Assert
         Assert.NotEmpty(testCategories);
     }
@@ -34,7 +32,7 @@ public sealed class CategoriesRepositoryTests : IClassFixture<DbFixture>
         var testProfileId  = new Guid(ConfigurationValues.TestProfileId);
         var testCategoryId  = new Guid(ConfigurationValues.TestCategory);
         //Act
-        var testCategory = await _categoriesRepository.GetOneAsync(x => x.Id.Equals(testCategoryId) && x.ProfileId.Equals(testProfileId));
+        var testCategory = await _categoryRepository.GetOneAsync(x => x.Id.Equals(testCategoryId) && x.ProfileId.Equals(testProfileId));
         //Assert
         Assert.NotNull(testCategory);
         Assert.Equal(testCategory.Id, testCategoryId);
@@ -53,7 +51,7 @@ public sealed class CategoriesRepositoryTests : IClassFixture<DbFixture>
             CategoryType = CategoryType.Expense
         };
         //Act
-        await _categoriesRepository.CreateAsync(entity: testCategory);
+        await _categoryRepository.CreateAsync(entity: testCategory);
         //Assert
         Assert.NotEqual(testCategory.Id, Guid.Empty);
     }
@@ -70,9 +68,9 @@ public sealed class CategoriesRepositoryTests : IClassFixture<DbFixture>
             CategoryType = CategoryType.Expense
         };
         //Act
-        await _categoriesRepository.CreateAsync(entity: testCategory);
+        await _categoryRepository.CreateAsync(entity: testCategory);
         testCategory.Name = "Test_Groceries1";
-        var updatedCategoryResult = await _categoriesRepository.UpdateAsync(entity: testCategory);
+        var updatedCategoryResult = await _categoryRepository.UpdateAsync(entity: testCategory);
         //Assert
         Assert.NotNull(updatedCategoryResult);
         Assert.Equal(updatedCategoryResult.IsAcknowledged, true);
@@ -91,7 +89,7 @@ public sealed class CategoriesRepositoryTests : IClassFixture<DbFixture>
             CategoryType = CategoryType.Expense
         };
         //Act
-        var updatedCategoryResult = await _categoriesRepository.UpdateAsync(entity: testCategory);
+        var updatedCategoryResult = await _categoryRepository.UpdateAsync(entity: testCategory);
         //Assert
         Assert.NotNull(updatedCategoryResult);
         Assert.Equal(updatedCategoryResult.IsAcknowledged, true);
@@ -110,8 +108,8 @@ public sealed class CategoriesRepositoryTests : IClassFixture<DbFixture>
             CategoryType = CategoryType.Expense
         };
         //Act
-        await _categoriesRepository.CreateAsync(entity: testCategory);
-        var removedCategoryResult = await _categoriesRepository.RemoveAsync(testCategory.Id);
+        await _categoryRepository.CreateAsync(entity: testCategory);
+        var removedCategoryResult = await _categoryRepository.RemoveAsync(testCategory.Id);
         //Assert
         Assert.NotNull(removedCategoryResult);
         Assert.Equal(removedCategoryResult.IsAcknowledged, true);
@@ -124,7 +122,7 @@ public sealed class CategoriesRepositoryTests : IClassFixture<DbFixture>
         //Arrange
         var fakeCategoryId = new Guid(ConfigurationValues.TestFakeCategoryIdForDelete);
         //Act
-        var removedCategoryResult = await _categoriesRepository.RemoveAsync(fakeCategoryId);
+        var removedCategoryResult = await _categoryRepository.RemoveAsync(fakeCategoryId);
         //Assert
         Assert.NotNull(removedCategoryResult);
         Assert.Equal(removedCategoryResult.IsAcknowledged, true);

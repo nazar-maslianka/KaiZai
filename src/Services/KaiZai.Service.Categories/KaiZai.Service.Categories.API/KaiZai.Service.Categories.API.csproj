@@ -7,9 +7,19 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="KaiZai.Service.Common.MongoDataAccessRepository" Version="1.0.0" />
+    <PackageReference Include="KaiZai.Common.Types" Version="1.0.0" />
+    <PackageReference Include="KaiZai.Service.Common.MessageExchangeBaseConfigurator" Version="1.0.8" />
+    <PackageReference Include="KaiZai.Service.Common.MongoDataAccessRepository" Version="1.0.6" />
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="7.0.9" />
+    <PackageReference Include="Serilog.AspNetCore" Version="7.0.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\KaiZai.Service.Categories.Contracts\KaiZai.Service.Categories.Contracts.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="KaiZai.Service.Categories.API.IntegrationTests" />
+  </ItemGroup>    
 </Project>

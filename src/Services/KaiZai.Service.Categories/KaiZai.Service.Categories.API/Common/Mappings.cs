@@ -16,10 +16,21 @@ public static class Mappings
         };
     }
 
-    public static Category ToCategory(this CreateCategoryDTO createCategoryDTO, Guid profileId)
+    public static Category ToCategory(this CreateUpdateCategoryDTO createCategoryDTO, Guid profileId)
     {
         return new Category
         {
+            ProfileId = profileId,
+            Name = createCategoryDTO.Name,
+            CategoryType = createCategoryDTO.CategoryType
+        };
+    }
+
+     public static Category ToCategory(this CreateUpdateCategoryDTO createCategoryDTO, Guid profileId, Guid id)
+    {
+        return new Category
+        {
+            Id = id,
             ProfileId = profileId,
             Name = createCategoryDTO.Name,
             CategoryType = createCategoryDTO.CategoryType
