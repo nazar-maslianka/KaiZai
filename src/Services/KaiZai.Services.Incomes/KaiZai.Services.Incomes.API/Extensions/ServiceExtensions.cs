@@ -1,8 +1,10 @@
+using System.Reflection;
 using KaiZai.Service.Common.MessageExchangeBaseConfigurator.MassTransit;
 using KaiZai.Service.Common.MessageExchangeBaseConfigurator.Settings;
 using KaiZai.Service.Common.MongoDataAccessRepository;
 using KaiZai.Service.Common.MongoDataAccessRepository.Settings;
 using KaiZai.Services.Incomes.BAL.Services;
+using KaiZai.Services.Incomes.CL.Clients;
 using KaiZai.Services.Incomes.DAL.Repositories;
 using ServiceSettingsForMessageExchanging = KaiZai.Service.Common.MessageExchangeBaseConfigurator.Settings.ServiceSettings;
 using ServiceSettingsForMongoDatabase = KaiZai.Service.Common.MongoDataAccessRepository.Settings.ServiceSettings;
@@ -22,9 +24,10 @@ public static class ServiceExtensions
 
     public static IServiceCollection ConfigureMassTransit(this IServiceCollection services, IConfiguration configuration)
     {
+        var assembly = Assembly.GetAssembly(typeof(CategoriesClient));
         var serviceSettings = configuration.GetSection(ServiceSettingsSection).Get<ServiceSettingsForMessageExchanging>();
         var rabbitMQSettings = configuration.GetSection(nameof(RabbitMQSettings)).Get<RabbitMQSettings>();
-        return services.AddMassTransitWithBaseSetUp(serviceSettings, rabbitMQSettings);
+        return services.AddMassTransitCoreSetUp(serviceSettings, rabbitMQSettings, null, assembly);
     }
 
     public static IServiceCollection AddBusinessServices(this IServiceCollection services)

@@ -15,7 +15,6 @@ public sealed class CategoryCreatedConsumer : IConsumer<CategoryCreated>
 
     public async Task Consume(ConsumeContext<CategoryCreated> context)
     {
-        _logger.LogInformation("Started");
         var message = context.Message;
 
         var result = await _categoryConsumersService.CreateCategoryAsync(message);

@@ -2,11 +2,11 @@ namespace KaiZai.Services.Incomes.CL.Consumers;
 
 public sealed class CategoryUpdatedConsumer: IConsumer<CategoryUpdated>
 {
-    private readonly ILogger<CategoryDeletedConsumer> _logger;
+    private readonly ILogger<CategoryUpdatedConsumer> _logger;
     private readonly ICategoryConsumersService _categoryConsumersService;
 
     public CategoryUpdatedConsumer(
-        ILogger<CategoryDeletedConsumer> logger,
+        ILogger<CategoryUpdatedConsumer> logger,
         ICategoryConsumersService categoryConsumersService)
     {
         _logger = logger;
