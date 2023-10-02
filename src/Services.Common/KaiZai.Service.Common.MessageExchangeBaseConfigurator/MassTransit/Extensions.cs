@@ -25,7 +25,7 @@ public static class Extensions
     public static IServiceCollection AddMassTransitCoreSetUp(this IServiceCollection collection,
         ServiceSettings serviceSettings, 
         RabbitMQSettings rabbitMQSettings,
-        Action<IBusRegistrationContext, IRabbitMqBusFactoryConfigurator>? rabbitMqAdditionalConfigurations,
+        Action<IBusRegistrationContext, IRabbitMqBusFactoryConfigurator>? rabbitMqAdditionalConfigurations = null,
         params Assembly[]? assembliesConsumers)
     {
         collection.AddMassTransit(configure => 
