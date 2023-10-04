@@ -1,5 +1,9 @@
 namespace KaiZai.Service.Common.MongoDataAccessRepository.Repository;
 
+/// <summary>
+/// Represents a generic repository interface for MongoDB data access.
+/// </summary>
+/// <typeparam name="TDocument">The type of document/entity stored in the repository.</typeparam>
 public interface IMongoRepository<TDocument> where TDocument: IEntity
 {
     #region Get operations
