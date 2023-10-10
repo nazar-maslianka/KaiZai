@@ -1,3 +1,4 @@
+using KaiZai.Services.Incomes.BAL.Core;
 using KaiZai.Services.Incomes.BAL.DTOs;
 using KaiZai.Services.Incomes.BAL.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -13,56 +14,126 @@ public class IncomesController : ControllerBase
     public IncomesController(ILogger<IncomesController> logger,
         IIncomeService iIncomeService)
     {
-        _logger = logger;
-        _iIncomeService = iIncomeService;
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        _iIncomeService = iIncomeService ?? throw new ArgumentNullException(nameof(iIncomeService));
     }
 
+    #region Get operations
     // GET: api/profile/{profileId}/incomes/{id}
     [HttpGet("{id}")]
-    public ActionResult<IncomeDTO> GetIncome(Guid id)
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<IncomeDTO>> GetIncome(Guid id)
     {
         // Implement code to retrieve a specific income record by ID
-        var income = _iIncomeService.FirstOrDefault(i => i.Id == id);
-        if (income == null)
+        var result = await _iIncomeService.GetIncomeByIdAsync(id);
+        if (result.ProcessStatus == ProcessStatus.UserError)
         {
+            _logger.LogWarning(result.UserError);
             return NotFound();
         }
-        return income;
+
+        return Ok(result.Value);
     }
-    // POST: api/incomes
+
+    // GET: api/profile/{profileId}/incomes?profileId=12345&pageNumber=1&pageSize=10&startDate=2023-01-01T00:00:00&endDate=2023-06-30T23:59:59
+    [HttpGet]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<ActionResult<PagedList<IncomeShortDTO>>> GetIncomesAggregatedByPageAsync(Guid profileId,
+        [FromQuery] PagingParams pagingParams,
+        [FromQuery] FilteringParams? filteringParams = null)
+    {
+        if (pagingParams == null)
+        {
+            return BadRequest("Paging parameters are required.");
+        }
+
+        var result = await _iIncomeService
+            .GetIncomesAggregatedByPageAsync(profileId, pagingParams, filteringParams);
+
+        if (result.ProcessStatus == ProcessStatus.UserError)
+        {
+            _logger.LogWarning(result.UserError);
+            return NotFound();
+        }
+        
+        if (result.ProcessStatus == ProcessStatus.SystemError)
+        {
+            _logger.LogWarning(result.SystemError);
+            return !string.IsNullOrWhiteSpace(result.UserError) 
+                ? StatusCode(500, result.UserError) 
+                : StatusCode(500);
+        }
+
+        return Ok(result.Value);
+    }
+    #endregion
+
+    #region CRUD operations
+    // POST: api/profile/{profileId}/incomes
     [HttpPost]
-    public ActionResult<Income> CreateIncome([FromBody] Income income)
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
+    public async Task<IActionResult> AddIncome(Guid profileId,
+        [FromBody] AddUpdateIncomeDTO addIncome)
     {
-        // Implement code to create a new income record
-        income.Id = Guid.NewGuid(); // Generate a new ID
-        _incomes.Add(income);
-        return CreatedAtAction(nameof(GetIncome), new { id = income.Id }, income);
+        if (!ModelState.IsValid)
+        {
+            return UnprocessableEntity(ModelState);
+        }
+
+        var result = await _iIncomeService.AddIncomeAsync(profileId, addIncome);
+        
+        if (result.ProcessStatus == ProcessStatus.UserError)
+        {
+            _logger.LogWarning(result.UserError);
+            return BadRequest();
+        }
+
+        return NoContent();
     }
-    // PUT: api/incomes/{id}
+
+    // PUT: api/profile/{profileId}/incomes/{id}
     [HttpPut("{id}")]
-    public IActionResult UpdateIncome(Guid id, [FromBody] Income updatedIncome)
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
+    [ProducesResponseType(StatusCodes.Status409Conflict)]
+    public async Task<IActionResult> UpdateIncome(Guid profileId,
+        Guid id, 
+        [FromBody] AddUpdateIncomeDTO updatedIncome)
     {
-        // Implement code to update an existing income record
-        var income = _incomes.FirstOrDefault(i => i.Id == id);
-        if (income == null)
+        if (!ModelState.IsValid)
         {
-            return NotFound();
+            return UnprocessableEntity(ModelState);
         }
-        // Update income properties with data from updatedIncome
-        // Example: income.Property = updatedIncome.Property;
+
+        var result = await _iIncomeService.UpdateIncomeAsync(profileId, id, updatedIncome);
+        
+        if (result.ProcessStatus == ProcessStatus.UserError)
+        {
+            _logger.LogWarning(result.UserError);
+            return Conflict();
+        }
+
         return NoContent();
     }
-    // DELETE: api/incomes/{id}
+    // DELETE: api/profile/{profileId}/incomes/{id}
     [HttpDelete("{id}")]
-    public IActionResult DeleteIncome(Guid id)
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> DeleteIncome(Guid id)
     {
-        // Implement code to delete an income record by ID
-        var income = _incomes.FirstOrDefault(i => i.Id == id);
+        var income = await _iIncomeService.GetIncomeByIdAsync(id);
         if (income == null)
         {
             return NotFound();
         }
-        _incomes.Remove(income);
+
+        var result = await _iIncomeService.DeleteIncomeAsync(id);
         return NoContent();
     }
+    #endregion
 }
