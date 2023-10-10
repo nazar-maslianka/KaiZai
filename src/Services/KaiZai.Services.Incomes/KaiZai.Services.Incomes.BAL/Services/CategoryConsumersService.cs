@@ -23,7 +23,7 @@ public sealed class CategoryConsumersService : ICategoryConsumersService
             throw new ArgumentNullException(nameof(categoryCreated));
         }
 
-        var existingCategory = await _categoryRepository.GetAsync(categoryCreated.Id);
+        var existingCategory = await _categoryRepository.GetOneAsync(categoryCreated.Id);
         if (existingCategory != null)
         {
             return Result.Failure($"Category with ID: {categoryCreated.Id} already present in database");
@@ -41,7 +41,7 @@ public sealed class CategoryConsumersService : ICategoryConsumersService
             throw new ArgumentNullException(nameof(categoryUpdated));
         }
 
-        var existingCategory = await _categoryRepository.GetAsync(categoryUpdated.Id);
+        var existingCategory = await _categoryRepository.GetOneAsync(categoryUpdated.Id);
         if (existingCategory == null)
         {
             await _categoryRepository.CreateAsync(categoryUpdated.ToCategory());
@@ -63,7 +63,7 @@ public sealed class CategoryConsumersService : ICategoryConsumersService
             throw new ArgumentNullException(nameof(categoryDeleted));
         }
 
-        var existingCategory = await _categoryRepository.GetAsync(categoryDeleted.Id);
+        var existingCategory = await _categoryRepository.GetOneAsync(categoryDeleted.Id);
         if (existingCategory == null)
         {
             return Result.Failure($"Category with ID: {categoryDeleted.Id} not present in database");
