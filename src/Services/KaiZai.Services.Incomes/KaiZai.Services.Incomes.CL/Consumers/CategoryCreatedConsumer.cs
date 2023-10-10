@@ -1,3 +1,5 @@
+using KaiZai.Services.Incomes.BAL.Core;
+
 namespace KaiZai.Services.Incomes.CL.Consumers;
 
 public sealed class CategoryCreatedConsumer : IConsumer<CategoryCreated>
@@ -18,9 +20,9 @@ public sealed class CategoryCreatedConsumer : IConsumer<CategoryCreated>
         var message = context.Message;
 
         var result = await _categoryConsumersService.CreateCategoryAsync(message);
-        if (!result.IsSuccess)
+        if (result.ProcessStatus == ProcessStatus.UserError)
         {
-            _logger.LogWarning(result.Error);
+            _logger.LogWarning(result.UserError);
         }
     }
 }

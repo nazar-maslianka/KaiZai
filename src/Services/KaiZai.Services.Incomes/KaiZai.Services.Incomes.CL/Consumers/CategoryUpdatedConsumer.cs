@@ -1,3 +1,5 @@
+using KaiZai.Services.Incomes.BAL.Core;
+
 namespace KaiZai.Services.Incomes.CL.Consumers;
 
 public sealed class CategoryUpdatedConsumer: IConsumer<CategoryUpdated>
@@ -18,9 +20,9 @@ public sealed class CategoryUpdatedConsumer: IConsumer<CategoryUpdated>
         var message = context.Message;
 
         var result = await _categoryConsumersService.UpdateCategoryAsync(message);
-        if (!result.IsSuccess)
+        if (result.ProcessStatus == ProcessStatus.UserError)
         {
-            _logger.LogWarning(result.Error);
+            _logger.LogWarning(result.UserError);
         }
     } 
 }

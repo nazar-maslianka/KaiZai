@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-
+using KaiZai.Services.Incomes.BAL.Core;
 
 namespace KaiZai.Services.Incomes.CL.Consumers;
 
@@ -24,9 +24,9 @@ public sealed class CategoryDeletedConsumer : IConsumer<CategoryDeleted>
         var message = context.Message;
 
         var result = await _categoryConsumersService.DeleteCategoryAsync(message);
-        if (!result.IsSuccess)
+          if (result.ProcessStatus == ProcessStatus.UserError)
         {
-            _logger.LogWarning(result.Error);
+            _logger.LogWarning(result.UserError);
         }
     }
 }
