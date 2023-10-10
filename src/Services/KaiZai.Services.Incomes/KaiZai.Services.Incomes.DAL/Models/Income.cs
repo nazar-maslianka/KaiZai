@@ -1,3 +1,5 @@
+using KaiZai.Service.Common.MongoDataAccessRepository.Core;
+
 namespace KaiZai.Services.Incomes.DAL.Models;
 
 public class Income : IEntity

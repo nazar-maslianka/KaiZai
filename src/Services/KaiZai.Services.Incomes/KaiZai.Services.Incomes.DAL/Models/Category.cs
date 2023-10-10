@@ -1,5 +1,5 @@
 using KaiZai.Common.Types;
-using KaiZai.MongoDataAccessAbstraction.Repository;
+using KaiZai.Service.Common.MongoDataAccessRepository.Core;
 
 namespace KaiZai.Services.Incomes.DAL.Models;
 

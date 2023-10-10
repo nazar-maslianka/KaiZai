@@ -7,7 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="KaiZai.MongoDataAccessAbstraction" Version="1.0.5" />
+    <PackageReference Include="KaiZai.Service.Common.MongoDataAccessRepository" Version="1.0.71" />
     <PackageReference Include="KaiZai.Common.Types" Version="1.0.0" />
   </ItemGroup>
 </Project>
