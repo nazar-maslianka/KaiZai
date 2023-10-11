@@ -2,7 +2,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\KaiZai.Services.Incomes.DAL\KaiZai.Services.Incomes.DAL.csproj" />
-    <PackageReference Include="KaiZai.Service.Categories.Contracts" Version="1.0.2" />
+    <PackageReference Include="KaiZai.Service.Categories.Contracts" Version="1.0.32" />
   </ItemGroup>
 
   <PropertyGroup>
