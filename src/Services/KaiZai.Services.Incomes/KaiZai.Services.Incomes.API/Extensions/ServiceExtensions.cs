@@ -5,7 +5,10 @@ using KaiZai.Service.Common.MongoDataAccessRepository;
 using KaiZai.Service.Common.MongoDataAccessRepository.Settings;
 using KaiZai.Services.Incomes.BAL.Services;
 using KaiZai.Services.Incomes.CL.Clients;
+using KaiZai.Services.Incomes.CL.Filters;
 using KaiZai.Services.Incomes.DAL.Repositories;
+using MassTransit;
+using MassTransit.RabbitMqTransport;
 using ServiceSettingsForMessageExchanging = KaiZai.Service.Common.MessageExchangeBaseConfigurator.Settings.ServiceSettings;
 using ServiceSettingsForMongoDatabase = KaiZai.Service.Common.MongoDataAccessRepository.Settings.ServiceSettings;
 
@@ -27,7 +30,14 @@ public static class ServiceExtensions
         var assembly = Assembly.GetAssembly(typeof(CategoriesClient));
         var serviceSettings = configuration.GetSection(ServiceSettingsSection).Get<ServiceSettingsForMessageExchanging>();
         var rabbitMQSettings = configuration.GetSection(nameof(RabbitMQSettings)).Get<RabbitMQSettings>();
-        return services.AddMassTransitCoreSetUp(serviceSettings, rabbitMQSettings, null, assembly);
+
+        var rabbitMqAdditionalConfigurations = 
+            (IBusRegistrationContext context, IRabbitMqBusFactoryConfigurator configurator) =>
+            {
+                configurator.UseConsumeFilter(typeof(IncomeCategoriesConsumersFilters<>), context);
+            };
+
+        return services.AddMassTransitCoreSetUp(serviceSettings, rabbitMQSettings, rabbitMqAdditionalConfigurations, assembly);
     }
 
     public static IServiceCollection AddBusinessServices(this IServiceCollection services)
