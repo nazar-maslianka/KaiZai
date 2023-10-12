@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <ProjectReference Include="..\KaiZai.Service.Incomes.DAL\KaiZai.Service.Incomes.DAL.csproj" />
+    <PackageReference Include="KaiZai.Service.Categories.Contracts" Version="1.0.33" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <TargetFramework>net7.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+</Project>
