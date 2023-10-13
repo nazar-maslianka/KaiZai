@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net7.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>disable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="KaiZai.Common.Types" Version="1.0.0" />
+    <PackageReference Include="KaiZai.Service.Common.MongoDataAccessRepository" Version="1.0.71" />
+  </ItemGroup>
+
+</Project>
