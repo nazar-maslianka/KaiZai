@@ -17,10 +17,19 @@ public static class Extensions
     /// <param name="collection"></param>
     /// <param name="serviceSettings">Settings with service name for Mongo collection</param>
     /// <param name="mongoConnectionSettings">Settings for connecting to Mongo database</param>
+    /// <exception cref="ArgumentNullException">Thrown when <paramref name="serviceSettings"/> or <paramref name="mongoConnectionSettings"/> is null.</exception>
     public static IServiceCollection AddMongoDatabase(this IServiceCollection collection, 
         ServiceSettings serviceSettings, 
         MongoConnectionSettings mongoConnectionSettings)
     {
+         if (serviceSettings == null)
+        {
+            throw new ArgumentNullException($"{nameof(serviceSettings)} is missing in the configuration.");
+        }
+        if (mongoConnectionSettings == null)
+        {
+            throw new ArgumentNullException($"{nameof(mongoConnectionSettings)} is missing in the configuration.");
+        }
         BsonSerializer.RegisterSerializer(new GuidSerializer(BsonType.String));
         BsonSerializer.RegisterSerializer(new DateTimeOffsetSerializer(BsonType.String));
         collection.AddSingleton<IMongoDatabase>(
