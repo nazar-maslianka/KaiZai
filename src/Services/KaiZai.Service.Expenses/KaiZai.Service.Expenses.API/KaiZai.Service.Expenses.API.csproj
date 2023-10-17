@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net7.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="KaiZai.Common.Types" Version="1.0.0" />
+    <PackageReference Include="KaiZai.Service.Common.MessageExchangeBaseConfigurator" Version="1.0.93" />
+    <PackageReference Include="KaiZai.Service.Common.MongoDataAccessRepository" Version="1.0.71" />
+    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="7.0.9" />
+    <PackageReference Include="Microsoft.Extensions.Http.Polly" Version="7.0.10" />
+    <PackageReference Include="Serilog.AspNetCore" Version="7.0.0" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\KaiZai.Service.Expenses.CL\KaiZai.Service.Expenses.CL.csproj" />
+  </ItemGroup>
+
+</Project>
