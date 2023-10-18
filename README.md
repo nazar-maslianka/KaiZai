@@ -2,8 +2,6 @@
 
 # Introduction
 KaiZai is a personal financial tracker that helps you take control of your finances, budget effectively, and gain insights into your spending habits. It's a practical learning project for building microservices and creating a functional financial tracking application.
- 
-KaiZai provides a practical, hands-on learning environment to understand how microservices work in a real-world application. The project is currently in progress and more features will be added in the future.
 
 # Features
 Category Management: Create your own categories
