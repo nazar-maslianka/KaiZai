@@ -1,0 +1,19 @@
+FROM mcr.microsoft.com/dotnet/sdk:7.0
+ARG BUILD_CONFIGURATION=Debug
+ENV ASPNETCORE_ENVIRONMENT=Development
+ENV DOTNET_USE_POLLING_FILE_WATCHER=true
+EXPOSE 80
+
+WORKDIR /src
+COPY ["Services/KaiZai.Service.Categories/KaiZai.Service.Categories.API/KaiZai.Service.Categories.API.csproj", "Services/KaiZai.Service.Categories/KaiZai.Service.Categories.API/"]
+COPY ["Services/KaiZai.Service.Categories/KaiZai.Service.Categories.Contracts/KaiZai.Service.Categories.Contracts.csproj", "Services/KaiZai.Service.Categories/KaiZai.Service.Categories.Contracts/"]
+COPY ["NuGet.config", "NuGet.config"]
+
+#TODO fix later (return error when trying to use route below)
+#D:/Programming/Projects/KaiZai/src/
+RUN dotnet restore Services/KaiZai.Service.Categories/KaiZai.Service.Categories.API/KaiZai.Service.Categories.API.csproj
+COPY . .
+WORKDIR /src/Services/KaiZai.Service.Categories/KaiZai.Service.Categories.API
+RUN dotnet build -c $BUILD_CONFIGURATION
+
+ENTRYPOINT ["dotnet", "run", "--no-build", "--no-launch-profile", "-c", "$BUILD_CONFIGURATION", "--"]
