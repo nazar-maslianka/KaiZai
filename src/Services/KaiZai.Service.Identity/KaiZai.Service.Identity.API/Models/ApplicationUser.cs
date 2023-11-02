@@ -1,12 +1,12 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿// Copyright (c) Duende Software. All rights reserved.
+// See LICENSE in the project root for license information.
 
-namespace KaiZai.Service.Identity.API.Models
+
+using Microsoft.AspNetCore.Identity;
+
+namespace KaiZai.Service.Identity.API.Models;
+
+// Add profile data for application users by adding properties to the ApplicationUser class
+public class ApplicationUser : IdentityUser
 {
-    public class ApplicationUser
-    {
-        
-    }
 }
