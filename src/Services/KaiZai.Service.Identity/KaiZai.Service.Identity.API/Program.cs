@@ -29,7 +29,6 @@ app.UseStaticFiles();
 app.UseIdentityServer();
 app.UseRouting();
 
-app.UseAuthentication();
 app.UseAuthorization();
 
 app.UseEndpoints(endpoints =>
