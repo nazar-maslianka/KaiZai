@@ -1,8 +1,18 @@
-﻿var builder = WebApplication.CreateBuilder(args);
+﻿using IdentityServerHost.Quickstart.UI;
+using KaiZai.Service.Identity.API.Quickstart;
+
+var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+builder.Services.AddIdentityServer()
+        .AddInMemoryApiScopes(IdentityBaseConfig.GetApiScopes())
+        .AddInMemoryApiResources(IdentityBaseConfig.GetApiResources())
+        .AddInMemoryIdentityResources(IdentityBaseConfig.GetIdentityResources())
+        .AddTestUsers(TestUsers.Users)
+        .AddInMemoryClients(IdentityBaseConfig.GetClients())
+        .AddDeveloperSigningCredential();
+
 builder.Services.AddControllersWithViews();
-builder.Services.AddIdentityServer();
 
 var app = builder.Build();
 
@@ -16,13 +26,15 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
-
+app.UseIdentityServer();
 app.UseRouting();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
-app.MapControllerRoute(
-    name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
+app.UseEndpoints(endpoints =>
+{
+    endpoints.MapDefaultControllerRoute();
+});
 
 app.Run();
