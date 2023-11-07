@@ -1,8 +1,7 @@
 using KaiZai.Service.Incomes.BAL.Core;
 using KaiZai.Service.Incomes.BAL.DTOs;
-using KaiZai.Service.Incomes.DAL.Models;
 
-namespace KaiZai.Service.Incomes.BAL.Services;
+namespace KaiZai.Service.Incomes.BAL.Contracts;
 
 //TODO: Change later according to importance
 public interface IIncomeService

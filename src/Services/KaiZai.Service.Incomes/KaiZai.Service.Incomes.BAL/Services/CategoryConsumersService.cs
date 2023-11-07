@@ -2,8 +2,9 @@ using KaiZai.Service.Categories.Contracts;
 using KaiZai.Service.Incomes.BAL.Core;
 using KaiZai.Service.Incomes.BAL.DTOs;
 using KaiZai.Service.Incomes.DAL.Models;
-using KaiZai.Service.Incomes.DAL.Repositories;
+using KaiZai.Service.Incomes.DAL.Contracts;
 using Microsoft.Extensions.Logging;
+using KaiZai.Service.Incomes.BAL.Contracts;
 
 namespace KaiZai.Service.Incomes.BAL.Services;
 
