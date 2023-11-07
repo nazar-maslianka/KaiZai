@@ -1,4 +1,4 @@
-namespace KaiZai.Service.Incomes.DAL.Repositories;
+namespace KaiZai.Service.Incomes.DAL.Contracts;
 
 public interface IIncomeRepository : IMongoRepository<Income>
 {
