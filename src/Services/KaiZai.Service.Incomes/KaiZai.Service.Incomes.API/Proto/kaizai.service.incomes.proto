@@ -1,0 +1,109 @@
+syntax = "proto3";
+
+import "google/protobuf/empty.proto";
+
+option csharp_namespace = "GrpcIncome";
+
+service IncomeGrpc {
+    rpc AddIncome(AddIncomeRequest) returns (Result);
+    rpc UpdateIncome(UpdateIncomeRequest) returns (Result);
+    rpc DeleteIncome(DeleteIncomeRequest) returns (Result);
+    rpc GetIncomeById(GetIncomeByIdRequest) returns (ResultIncomeDTO);
+    rpc GetIncomesAggregatedByPage(GetIncomesAggregatedByPageRequest) returns (ResultPagedListIncomeShortDTO);
+}
+
+message AddIncomeRequest {
+    string profile_id = 1;
+    AddUpdateIncomeDTO add_income_dto = 2;
+}
+
+message UpdateIncomeRequest {
+    string profile_id = 1;
+    string income_id = 2;
+    AddUpdateIncomeDTO update_income_dto = 3;
+}
+
+message DeleteIncomeRequest {
+    string income_id = 1;
+}
+
+message GetIncomeByIdRequest {
+    string income_id = 1;
+}
+
+message GetIncomesAggregatedByPageRequest {
+    string profile_id = 1;
+    PagingParams paging_params = 2;
+    FilteringParams filtering_params = 3;
+}
+
+message Result {
+    ProcessStatus process_status = 1;
+    string custom_error = 2;
+    string exception_error = 3;
+}
+
+message ResultIncomeDTO {
+    ProcessStatus process_status = 1;
+    string custom_error = 2;
+    string exception_error = 3;
+    IncomeDTO value = 4;
+}
+
+message ResultPagedListIncomeShortDTO {
+    ProcessStatus process_status = 1;
+    string custom_error = 2;
+    string exception_error = 3;
+    PagedListIncomeShortDTO value = 4;
+}
+
+message PagingParams {
+    int32 page_number = 1;
+    int32 page_size = 2;
+}
+
+message FilteringParams {
+    google.protobuf.Timestamp start_date = 1;
+    google.protobuf.Timestamp end_date = 2;
+}
+
+message AddUpdateIncomeDTO {
+    string category_id = 1;
+    google.protobuf.Timestamp income_date = 2;
+    string description = 3;
+    double amount = 4;
+}
+
+message IncomeDTO {
+    string id = 1;
+    string profile_id = 2;
+    CategoryDTO category = 3;
+    google.protobuf.Timestamp income_date = 4;
+    string description = 5;
+    double amount = 6;
+}
+
+message IncomeShortDTO {
+    string id = 1;
+    CategoryShortDTO category = 2;
+    google.protobuf.Timestamp income_date = 3;
+    double amount = 4;
+}
+
+message CategoryDTO {
+    string id = 1;
+    string profile_id = 2;
+    string name = 3;
+    CategoryType category_type = 4;
+}
+
+message CategoryShortDTO {
+    string id = 1;
+    string name = 2;
+}
+
+enum ProcessStatus {
+    Completed = 0;
+    UserError = 1;
+    SystemError = 2;
+}
