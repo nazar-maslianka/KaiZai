@@ -18,7 +18,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Protobuf Include="Proto\income.proto" GrpcServices="Server" />
+    <Protobuf Include="Protos/kaizai_service_incomes.proto" AdditionalImportDirs="../../../Common/Protos/" GrpcServices="Server" ProtoRoot="Protos/"/>
+    <Protobuf Include="../../../Common/Protos/types.proto" GrpcServices="None" ProtoRoot="../../../Common/Protos/" Link="types.proto"/>
   </ItemGroup>
 
   <ItemGroup>
