@@ -74,15 +74,6 @@ message GetIncomesAggregatedByPageRequest {
 message GetIncomesAggregatedByPageResponse {
     // Paged list of incomes
     PagedList pagedList = 1;
-  
-    // Process status of the request
-    ProcessStatus processStatus = 2;
-  
-    // User-level error message
-    string userError = 3;
-  
-    // System-level error message
-    string systemError = 4;
 }
 
 // Metadata associated with paging information
