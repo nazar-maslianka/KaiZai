@@ -1,0 +1,24 @@
+syntax = "proto3";
+option csharp_namespace = "Grpc.Additional.Types";
+
+package AdditionalTypes;
+
+// Represents a decimal value with whole units and nano units.
+// Example: 12345.6789 -> { units = 12345, nanos = 678900000 }
+message DecimalValue {
+
+    // Whole units part of the amount
+    int64 units = 1;
+
+    // Nano units of the amount (10^-9)
+    // Must be same sign as units
+    sfixed32 nanos = 2;
+}
+
+// Represents a GUID value.
+message GuidValue {
+
+    // The string representation of the GUID value.
+    // Example: "550e8400-e29b-41d4-a716-446655440000".
+    string value = 1;
+}

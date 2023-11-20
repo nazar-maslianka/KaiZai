@@ -1,7 +1,7 @@
 using KaiZai.Service.Categories.Contracts;
 using KaiZai.Service.Incomes.BAL.Core;
 
-namespace KaiZai.Service.Incomes.BAL.Services;
+namespace KaiZai.Service.Incomes.BAL.Contracts;
 
 public interface ICategoryConsumersService
 {

@@ -7,10 +7,12 @@ using KaiZai.Service.Incomes.BAL.Services;
 using KaiZai.Service.Incomes.CL.Clients;
 using KaiZai.Service.Incomes.CL.Filters;
 using KaiZai.Service.Incomes.DAL.Repositories;
+using KaiZai.Service.Incomes.DAL.Contracts;
 using MassTransit;
 using MassTransit.RabbitMqTransport;
 using ServiceSettingsForMessageExchanging = KaiZai.Service.Common.MessageExchangeBaseConfigurator.Settings.ServiceSettings;
 using ServiceSettingsForMongoDatabase = KaiZai.Service.Common.MongoDataAccessRepository.Settings.ServiceSettings;
+using KaiZai.Service.Incomes.BAL.Contracts;
 
 namespace KaiZai.Service.Incomes.API.Extensions;
 

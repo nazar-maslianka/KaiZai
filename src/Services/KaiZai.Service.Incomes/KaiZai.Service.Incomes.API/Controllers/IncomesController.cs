@@ -1,3 +1,5 @@
+using System.Text.Json;
+using KaiZai.Service.Incomes.BAL.Contracts;
 using KaiZai.Service.Incomes.BAL.Core;
 using KaiZai.Service.Incomes.BAL.DTOs;
 using KaiZai.Service.Incomes.BAL.Services;
@@ -67,6 +69,9 @@ public class IncomesController : ControllerBase
                 : StatusCode(500);
         }
 
+        Response.Headers.Add("X-Pagination", 
+            JsonSerializer.Serialize(result.Value.Metadata));
+
         return Ok(result.Value);
     }
     #endregion
@@ -120,6 +125,7 @@ public class IncomesController : ControllerBase
 
         return NoContent();
     }
+    
     // DELETE: api/profile/{profileId}/incomes/{id}
     [HttpDelete("{id}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
