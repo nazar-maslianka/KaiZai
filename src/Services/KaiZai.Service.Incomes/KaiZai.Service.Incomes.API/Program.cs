@@ -1,3 +1,4 @@
+using GrpcIncomes;
 using KaiZai.Service.Incomes.API.Extensions;
 using Serilog;
 
@@ -11,6 +12,7 @@ var logger = new LoggerConfiguration()
     .CreateLogger();
 // Add services to the container.
 builder.Services.AddSerilog(logger);
+builder.Services.AddGrpc();
 builder.Services.AddCategoriesClientHttpHandler();
 builder.Services.AddRepositories();
 builder.Services.AddBusinessServices();
@@ -27,6 +29,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.MapGrpcService<IncomesGrpcService>();
 
 app.UseHttpsRedirection();
 
