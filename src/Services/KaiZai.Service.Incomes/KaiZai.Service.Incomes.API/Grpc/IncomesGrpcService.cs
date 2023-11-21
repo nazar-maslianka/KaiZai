@@ -1,11 +1,11 @@
 using System.Text.Json;
 using Google.Protobuf.WellKnownTypes;
-using Grpc;
 using Grpc.Core;
+using KaiZai.Service.Incomes.API.Grpc;
 using KaiZai.Service.Incomes.BAL.Contracts;
 using BALayerCore = KaiZai.Service.Incomes.BAL.Core;
 
-namespace KaiZai.Service.Incomes.API.Grpc;
+namespace GrpcIncomes;
 
 public sealed partial class IncomesGrpcService : IncomesGrpc.IncomesGrpcBase
 {
@@ -104,7 +104,10 @@ public sealed partial class IncomesGrpcService : IncomesGrpc.IncomesGrpcBase
 
         var pagedListResult = new PagedList();
         pagedListResult.Metadata = result.Value.Metadata.ToMetadataGrpc();
-        pagedListResult.Items.AddRange(result.Value.Select(x => (T)x));
+        var items = result.Value
+            .Select(x => Any.Pack((Google.Protobuf.IMessage)x));
+        
+        pagedListResult.Items.AddRange(items);
 
         return new GetIncomesAggregatedByPageResponse
         { 

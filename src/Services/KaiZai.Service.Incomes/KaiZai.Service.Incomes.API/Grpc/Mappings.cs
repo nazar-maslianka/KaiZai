@@ -1,8 +1,8 @@
-using Grpc;
 using BALayerCommonTypes = KaiZai.Common.Types;
 using BALayerDTOs = KaiZai.Service.Incomes.BAL.DTOs;
 using BALayerCore = KaiZai.Service.Incomes.BAL.Core;
 using Google.Protobuf.WellKnownTypes;
+using GrpcIncomes;
 
 namespace KaiZai.Service.Incomes.API.Grpc;
 

@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-option csharp_namespace = "Grpc";
+option csharp_namespace = "GrpcIncomes";
 
 import "google/protobuf/Timestamp.proto";
 import "google/protobuf/any.proto";
@@ -97,16 +97,10 @@ message Metadata {
     bool hasNext = 6;
 }
 
-// Define a message for the generic container
-message T {
-    // Use "Any" to represent any type
-    google.protobuf.Any item = 1;
-}
-
 // Paged list containing items and metadata
 message PagedList {
     // Items in the current page
-    repeated T items = 1;
+    repeated google.protobuf.Any items = 1;
   
     // Metadata associated with the paged list
     Metadata metadata = 2;
