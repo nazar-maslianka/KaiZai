@@ -19,6 +19,7 @@
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
   </ItemGroup>
   <ItemGroup>
-    <Protobuf Include="../../../*/*/Protos/kaizai_service_incomes.proto" AdditionalImportDirs="../../../Common/Protos/" GrpcServices="Client" />
+    <Protobuf Include="..\..\..\*\*\KaiZai.Service.Incomes.API\Protos\kaizai_service_incomes.proto" AdditionalImportDirs="..\..\..\Common\Protos\" GrpcServices="Client" />
+    <Protobuf Include="..\..\..\Common\Protos\types.proto" GrpcServices="None" />
   </ItemGroup>
 </Project>
