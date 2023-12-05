@@ -1,11 +1,8 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using KaiZai.Web.HttpAggregator.Core;
 using KaiZai.Web.HttpAggregator.Models;
-using System.Threading.Tasks;
-using Grpc.Core;
 using GrpcIncomes;
+using Google.Protobuf.WellKnownTypes;
+using KaiZai.Web.HttpAggregator.Grpc;
 
 namespace KaiZai.Web.HttpAggregator.Services;
 
@@ -24,14 +21,24 @@ public sealed class IncomesService : IIncomesService
     public async Task<IncomeDataItem> GetIncomeById(Guid incomeId)
     {
          _logger.LogDebug("grpc client created, request = {@id}", incomeId);
-        var response = await _incomesClient.GetIncomeByIdAsync(new GetIncomeByIdRequest { IncomeId = incomeId });
-        _logger.LogDebug("grpc response {@response}", response);
-        return null;
+        var grpcIncomeDTO = await _incomesClient.GetIncomeByIdAsync(new GetIncomeByIdRequest { IncomeId = incomeId });
+        _logger.LogDebug("grpc response {@response}", grpcIncomeDTO);
+        
+        return MapToIncomeDataItem(grpcIncomeDTO);
     }
 
     public async Task<PagedDataItemsList<IncomeDataItem>> GetPagedIncomes(GetPagedIncomesRequest request)
     {
-        throw new NotImplementedException();
+        var grpcGetIncomesAggregatedByPageRequest = MapToGrpcGetIncomesAggregatedByPageRequest(request);
+        var grpcIncomesAggregatedByPageResult = await _incomesClient.GetIncomesAggregatedByPageAsync(grpcGetIncomesAggregatedByPageRequest);
+
+        var incomeDataItems = grpcIncomesAggregatedByPageResult.PagedList.Items
+            .Select(x => MapToIncomeDataItem(MessageConverters.DeserializeAny<IncomeDTO>(x)));
+
+        return new PagedDataItemsList<IncomeDataItem>(incomeDataItems, 
+            grpcIncomesAggregatedByPageResult.PagedList.Metadata.TotalCount,
+            grpcIncomesAggregatedByPageResult.PagedList.Metadata.CurrentPage,
+            grpcIncomesAggregatedByPageResult.PagedList.Metadata.PageSize);
     }
 
     public async Task AddIncome(AddUpdateIncomeRequest request)
@@ -65,6 +72,32 @@ public sealed class IncomesService : IIncomesService
             incomeGrpcDTO.Description,
             incomeGrpcDTO.Amount
         );
+    }
+
+    private GetIncomesAggregatedByPageRequest MapToGrpcGetIncomesAggregatedByPageRequest(GetPagedIncomesRequest getPagedIncomesRequest) 
+    {
+        if (getPagedIncomesRequest == null)
+        {
+            return null;
+        }
+
+        return new GetIncomesAggregatedByPageRequest
+        {
+            ProfileId = getPagedIncomesRequest.ProfileId,
+            PagingParams = new GrpcIncomes.PagingParams
+            {
+                PageNumber = getPagedIncomesRequest.PagingParams.PageNumber,
+                PageSize = getPagedIncomesRequest.PagingParams.PageSize,
+            },
+            FilteringParams = getPagedIncomesRequest.FilteringParams != null
+                ? new GrpcIncomes.FilteringParams
+                {
+                    StartDate = Timestamp.FromDateTimeOffset(getPagedIncomesRequest.FilteringParams.StartDate),
+                    EndDate = Timestamp.FromDateTimeOffset(getPagedIncomesRequest.FilteringParams.EndDate)
+                } 
+                : null
+            // getPagedIncomesRequest.FilteringParams
+        };
     }
     
 }
