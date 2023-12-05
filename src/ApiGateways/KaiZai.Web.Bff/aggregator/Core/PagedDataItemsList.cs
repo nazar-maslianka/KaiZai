@@ -27,6 +27,6 @@ public sealed class PagedDataItemsList<T> : List<T>
             pageSize,
             totalCount
         );
-        AddRange(items);
+        AddRange(items ?? Enumerable.Empty<T>());
     }
 }
