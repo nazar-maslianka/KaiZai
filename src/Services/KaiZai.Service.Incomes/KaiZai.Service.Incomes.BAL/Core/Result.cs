@@ -25,7 +25,7 @@ public enum ProcessStatus
 /// Represents a result container that can hold either a successful result value or an error message.
 /// </summary>
 /// <typeparam name="T">The type of the result value when successful.</typeparam>
-public sealed record Result<T>
+public sealed record Result<T> where T : class
 {
     /// <summary>
     /// Gets a value indicating whether the result represents success.
@@ -33,9 +33,9 @@ public sealed record Result<T>
     public ProcessStatus ProcessStatus { get; init; }
 
     /// <summary>
-    /// Gets the result value when the operation is successful.
+    /// Gets the result value when the operation is successful. 
     /// </summary>
-    public T Value { get; init; }
+    public T? Value { get; init; }
 
     /// <summary>
     /// Gets the user error message when the operation is not successful.
@@ -45,7 +45,7 @@ public sealed record Result<T>
     /// <summary>
     /// Gets the system message when the operation is not successful.
     /// </summary>
-    public string SystemError { get; init; }
+    public string? SystemError { get; init; }
 
     /// <summary>
     /// Creates a new successful result with the specified value.
@@ -88,7 +88,7 @@ public sealed record Result
     /// <summary>
     /// Gets the system error message when the operation is not successful.
     /// </summary>
-    public string SystemError { get; init; }
+    public string? SystemError { get; init; }
 
     /// <summary>
     /// Creates a new successful result.
