@@ -6,13 +6,13 @@ using KaiZai.Web.HttpAggregator.Grpc;
 
 namespace KaiZai.Web.HttpAggregator.Services;
 
-public sealed class IncomesService : IIncomesService
+public sealed class IncomeService : IIncomeService
 {
-    private readonly ILogger<IncomesService> _logger;
+    private readonly ILogger<IncomeService> _logger;
     private readonly IncomesGrpc.IncomesGrpcClient _incomesClient;
 
-    public IncomesService(IncomesGrpc.IncomesGrpcClient incomesClient,
-        ILogger<IncomesService> logger)
+    public IncomeService(IncomesGrpc.IncomesGrpcClient incomesClient,
+        ILogger<IncomeService> logger)
     {
         _incomesClient = incomesClient;
         _logger = logger;
@@ -35,15 +35,31 @@ public sealed class IncomesService : IIncomesService
         var incomeDataItems = grpcIncomesAggregatedByPageResult.PagedList.Items
             .Select(x => MapToIncomeDataItem(MessageConverters.DeserializeAny<IncomeDTO>(x)));
 
-        return new PagedDataItemsList<IncomeDataItem>(incomeDataItems, 
+        return new PagedDataItemsList<IncomeDataItem>(incomeDataItems ?? Enumerable.Empty<IncomeDataItem>(), 
             grpcIncomesAggregatedByPageResult.PagedList.Metadata.TotalCount,
             grpcIncomesAggregatedByPageResult.PagedList.Metadata.CurrentPage,
             grpcIncomesAggregatedByPageResult.PagedList.Metadata.PageSize);
     }
 
-    public async Task AddIncome(AddUpdateIncomeRequest request)
+    public async Task<Empty> AddIncome(AddUpdateIncomeRequest request)
     {
-        throw new NotImplementedException();
+        if (request == null)
+        {
+            throw new ArgumentNullException($"Invalid parameter {nameof(request)}");
+        }
+
+        var response = await _incomesClient.AddIncomeAsync(new AddIncomeRequest
+        {
+            ProfileId = request.ProfileId,
+            AddIncomeDTO = new AddUpdateIncomeDTO
+            {
+                CategoryId = request.CategoryId,
+                Description = request.Description,
+                Amount = request.Amount
+            }
+        });
+
+        return response;
     }
 
     public async Task UpdateIncome(AddUpdateIncomeRequest request)
