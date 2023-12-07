@@ -1,4 +1,5 @@
 using MongoDB.Driver;
+using KaiZai.Service.Incomes.DAL.Contracts;
 
 namespace KaiZai.Service.Incomes.DAL.Repositories;
 

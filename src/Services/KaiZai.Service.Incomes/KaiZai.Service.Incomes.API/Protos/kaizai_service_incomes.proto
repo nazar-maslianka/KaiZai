@@ -1,0 +1,221 @@
+syntax = "proto3";
+
+option csharp_namespace = "GrpcIncomes";
+
+import "google/protobuf/Timestamp.proto";
+import "google/protobuf/any.proto";
+import "google/protobuf/empty.proto";
+import "types.proto";
+
+// gRPC service for managing income-related operations
+service IncomesGrpc {
+    // Adds a new income
+    rpc AddIncome(AddIncomeRequest) returns (google.protobuf.Empty);
+  
+    // Updates an existing income
+    rpc UpdateIncome(UpdateIncomeRequest) returns (google.protobuf.Empty);
+  
+    // Deletes an income
+    rpc DeleteIncome(DeleteIncomeRequest) returns (google.protobuf.Empty);
+  
+    // Retrieves an income by its ID
+    rpc GetIncomeById(GetIncomeByIdRequest) returns (IncomeDTO);
+  
+    // Retrieves aggregated incomes based on paging, filtering, and profiling
+    rpc GetIncomesAggregatedByPage(GetIncomesAggregatedByPageRequest) returns (GetIncomesAggregatedByPageResponse);
+}
+
+// Request message for adding an income
+message AddIncomeRequest {
+    // Profile ID associated with the income
+    AdditionalTypes.GuidValue profileId = 1;
+  
+    // DTO for adding a new income
+    AddUpdateIncomeDTO addIncomeDTO = 2;
+}
+
+// Request message for updating an income
+message UpdateIncomeRequest {
+    // Profile ID associated with the income
+    AdditionalTypes.GuidValue profileId = 1;
+  
+    // ID of the income to update
+    AdditionalTypes.GuidValue incomeId = 2;
+  
+    // DTO for updating an existing income
+    AddUpdateIncomeDTO updateIncomeDTO = 3;
+}
+
+// Request message for deleting an income
+message DeleteIncomeRequest {
+    // ID of the income to delete
+    AdditionalTypes.GuidValue incomeId = 1;
+}
+
+// Request message for retrieving an income by ID
+message GetIncomeByIdRequest {
+    // ID of the income to retrieve
+    AdditionalTypes.GuidValue incomeId = 1;
+}
+
+// Request message for retrieving aggregated incomes based on paging, filtering, and profiling
+message GetIncomesAggregatedByPageRequest {
+    // Profile ID for filtering
+    AdditionalTypes.GuidValue profileId = 1;
+  
+    // Paging parameters
+    PagingParams pagingParams = 2;
+  
+    // Filtering parameters
+    FilteringParams filteringParams = 3;
+}
+
+// Response message for retrieving aggregated incomes
+message GetIncomesAggregatedByPageResponse {
+    // Paged list of incomes
+    PagedList pagedList = 1;
+}
+
+// Metadata associated with paging information
+message Metadata {
+    // Current page number
+    int32 currentPage = 1;
+  
+    // Total number of pages
+    int32 totalPages = 2;
+  
+    // Maximum number of items per page
+    int32 pageSize = 3;
+  
+    // Total number of items across all pages
+    int32 totalCount = 4;
+  
+    // Whether there is a previous page
+    bool hasPrevious = 5;
+  
+    // Whether there is a next page
+    bool hasNext = 6;
+}
+
+// Paged list containing items and metadata
+message PagedList {
+    // Items in the current page
+    repeated google.protobuf.Any items = 1;
+  
+    // Metadata associated with the paged list
+    Metadata metadata = 2;
+}
+
+// Paging parameters for specifying page number and size
+message PagingParams {
+    // Page number
+    int32 pageNumber = 1;
+  
+    // Page size
+    int32 pageSize = 2;
+}
+
+// Filtering parameters with start and end date
+message FilteringParams {
+    // Start date for filtering
+    google.protobuf.Timestamp startDate = 1;
+  
+    // End date for filtering
+    google.protobuf.Timestamp endDate = 2;
+}
+
+// DTO for adding or updating an income
+message AddUpdateIncomeDTO {
+    // Category ID associated with the income
+    AdditionalTypes.GuidValue categoryId = 1;
+  
+    // Date of the income
+    google.protobuf.Timestamp incomeDate = 2;
+  
+    // Description of the income
+    string description = 3;
+  
+    // Amount of the income
+    AdditionalTypes.DecimalValue amount = 4;
+}
+
+// DTO representing a detailed income
+message IncomeDTO {
+    // ID of the income
+    AdditionalTypes.GuidValue id = 1;
+  
+    // Profile ID associated with the income
+    AdditionalTypes.GuidValue profileId = 2;
+  
+    // Category details
+    CategoryDTO category = 3;
+  
+    // Date of the income
+    google.protobuf.Timestamp incomeDate = 4;
+  
+    // Description of the income
+    string description = 5;
+  
+    // Amount of the income
+    AdditionalTypes.DecimalValue amount = 6;
+}
+
+// DTO representing a short version of an income
+message IncomeShortDTO {
+    // ID of the income
+    AdditionalTypes.GuidValue id = 1;
+  
+    // Category details
+    CategoryShortDTO category = 2;
+  
+    // Date of the income
+    google.protobuf.Timestamp incomeDate = 3;
+  
+    // Amount of the income
+    AdditionalTypes.DecimalValue amount = 4;
+}
+
+// DTO representing a detailed category
+message CategoryDTO {
+    // ID of the category
+    AdditionalTypes.GuidValue id = 1;
+  
+    // Profile ID associated with the category
+    AdditionalTypes.GuidValue profileId = 2;
+  
+    // Name of the category
+    string name = 3;
+  
+    // Type of the category (Income or Expense)
+    CategoryType categoryType = 4;
+}
+
+// DTO representing a short version of a category
+message CategoryShortDTO {
+    // ID of the category
+    AdditionalTypes.GuidValue id = 1;
+  
+    // Name of the category
+    string name = 2;
+}
+
+// Enumeration for process status
+enum ProcessStatus {
+    // The operation was completed successfully
+    Completed = 0;
+  
+    // User-level error occurred during the operation
+    UserError = 1;
+  
+    // System-level error occurred during the operation
+    SystemError = 2;
+}
+
+// Enumeration for category types
+enum CategoryType {
+    // Represents an Income category
+    Income = 0;
+  
+    // Represents an Expense category
+    Expense = 1;
+}

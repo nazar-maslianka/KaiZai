@@ -1,3 +1,4 @@
+using KaiZai.Service.Incomes.BAL.Contracts;
 using KaiZai.Service.Incomes.BAL.Core;
 
 namespace KaiZai.Service.Incomes.CL.Consumers;
