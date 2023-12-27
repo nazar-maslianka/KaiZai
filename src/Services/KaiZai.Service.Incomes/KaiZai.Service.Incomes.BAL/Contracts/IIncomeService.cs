@@ -68,7 +68,7 @@ public interface IIncomeService
     /// </returns>
     Task<Result<PagedList<IncomeShortDTO>>> GetIncomesAggregatedByPageAsync(Guid profileId,
         PagingParams pagingParams,
-        FilteringParams? filteringParams = null);
+        FilteringParams filteringParams = null);
     //
     //// Retrieve a list of income records for a specific user
     ////Task<List<Income>> GetIncomesByUserIdAsy Task<Guid> CreateIncomeAsync(Income income);
