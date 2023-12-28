@@ -167,7 +167,7 @@ public sealed class IncomeService : IIncomeService
 
     public async Task<Result<PagedList<IncomeShortDTO>>> GetIncomesAggregatedByPageAsync(Guid profileId,
         PagingParams pagingParams,
-        FilteringParams? filteringParams = null) 
+        FilteringParams filteringParams = null) 
     {
         if (profileId == Guid.Empty)
         {
@@ -185,12 +185,12 @@ public sealed class IncomeService : IIncomeService
         {
             Expression<Func<Income, bool>>? filterDefinition = income =>
                 income.ProfileId.Equals(profileId)
-                && income.IncomeDate >= filteringParams.StartDate
-                && income.IncomeDate <= filteringParams.EndDate;
+                && income.IncomeDate >= filteringParams.StartDate.Value
+                && income.IncomeDate <= filteringParams.EndDate.Value;
 
             var baseAggregateQuery = _incomeRepository
                 .GetBaseAggregateQuery(filterDefinition)
-                .SortBy(inc => inc.IncomeDate.Date);
+                .SortBy(inc => inc.IncomeDate);
 
             var aggregatedByPageIncomesResult = _incomeRepository.GetAggregateByPageAsync(
                 pagingParams.PageSize,
