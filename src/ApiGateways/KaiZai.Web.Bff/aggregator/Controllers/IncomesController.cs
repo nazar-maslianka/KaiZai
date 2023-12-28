@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace KaiZai.Web.HttpAggregator.Controllers;
 
 [ApiController]
-[Route("api/profile/{profileId}/[controller]")]
+[Route("api/[controller]")]
 public class IncomesController : ControllerBase
 {
     private readonly IIncomeService _iIncomes;
@@ -18,7 +18,7 @@ public class IncomesController : ControllerBase
     }
 
     #region Get operations
-    // GET: api/profile/{profileId}/incomes/{id}
+    // GET: api/incomes/{id}
     [HttpGet("{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -34,13 +34,14 @@ public class IncomesController : ControllerBase
         return Ok(result);
     }
 
-    // GET: api/profile/{profileId}/incomes?profileId=12345&pageNumber=1&pageSize=10&startDate=2023-01-01T00:00:00&endDate=2023-06-30T23:59:59
+    // GET: api/incomes?pageNumber=1&pageSize=10&startDate=2023-01-01T00:00:00&endDate=2023-06-30T23:59:59
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<ActionResult<PagedDataItemsList<IncomeDataItem>>> GetIncomesAggregatedByPageAsync(Guid profileId,
+    public async Task<ActionResult<PagedDataItemsList<IncomeDataItem>>> GetIncomesAggregatedByPageAsync(
+        [FromHeader] Guid profileId,
         [FromQuery] PagingParams pagingParams,
-        [FromQuery] FilteringParams? filteringParams = null)
+        [FromQuery] FilteringParams filteringParams = null)
     {
         if (pagingParams == null)
         {
@@ -53,7 +54,7 @@ public class IncomesController : ControllerBase
             pagingParams, 
             filteringParams ?? new FilteringParams()));
 
-        Response.Headers.Add("X-Pagination", 
+        Response.Headers.Add("Pagination", 
             JsonSerializer.Serialize(pagedIncomeDataItemsList.Metadata));
 
         return Ok(pagedIncomeDataItemsList);
@@ -61,12 +62,13 @@ public class IncomesController : ControllerBase
     #endregion
 
     #region CRUD operations
-    // POST: api/profile/{profileId}/incomes
+    // POST: api/incomes
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
-    public async Task<IActionResult> AddIncome(Guid profileId,
+    public async Task<IActionResult> AddIncome(
+        [FromHeader] Guid profileId,
         [FromBody] AddUpdateIncomeRequest addIncome)
     {
         var response = await _iIncomes.AddIncome(new AddUpdateIncomeRequest(
@@ -79,7 +81,7 @@ public class IncomesController : ControllerBase
         return NoContent();
     }
 
-    // // PUT: api/profile/{profileId}/incomes/{id}
+    // // PUT: api/incomes/{id}
     // [HttpPut("{id}")]
     // [ProducesResponseType(StatusCodes.Status204NoContent)]
     // [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
@@ -104,7 +106,7 @@ public class IncomesController : ControllerBase
     //     return NoContent();
     // }
     
-    // // DELETE: api/profile/{profileId}/incomes/{id}
+    // // DELETE: api/incomes/{id}
     // [HttpDelete("{id}")]
     // [ProducesResponseType(StatusCodes.Status204NoContent)]
     // [ProducesResponseType(StatusCodes.Status404NotFound)]
