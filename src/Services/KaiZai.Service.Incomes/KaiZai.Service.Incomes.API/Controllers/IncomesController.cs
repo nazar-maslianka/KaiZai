@@ -2,13 +2,12 @@ using System.Text.Json;
 using KaiZai.Service.Incomes.BAL.Contracts;
 using KaiZai.Service.Incomes.BAL.Core;
 using KaiZai.Service.Incomes.BAL.DTOs;
-using KaiZai.Service.Incomes.BAL.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace KaiZai.Service.Incomes.API.Controllers;
 
 [ApiController]
-[Route("api/profile/{profileId}/[controller]")]
+[Route("api/[controller]")]
 public class IncomesController : ControllerBase
 {
     private readonly ILogger<IncomesController> _logger;
@@ -21,7 +20,7 @@ public class IncomesController : ControllerBase
     }
 
     #region Get operations
-    // GET: api/profile/{profileId}/incomes/{id}
+    // GET: api/incomes/{id}
     [HttpGet("{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -38,14 +37,15 @@ public class IncomesController : ControllerBase
         return Ok(result.Value);
     }
 
-    // GET: api/profile/{profileId}/incomes?profileId=12345&pageNumber=1&pageSize=10&startDate=2023-01-01T00:00:00&endDate=2023-06-30T23:59:59
+    // GET: api/incomes?pageNumber=1&pageSize=10&startDate=2023-01-01T00:00:00&endDate=2023-06-30T23:59:59
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<ActionResult<PagedList<IncomeShortDTO>>> GetIncomesAggregatedByPageAsync(Guid profileId,
+    public async Task<ActionResult<PagedList<IncomeShortDTO>>> GetIncomesAggregatedByPageAsync(
+        [FromHeader] Guid ProfileId,
         [FromQuery] PagingParams pagingParams,
-        [FromQuery] FilteringParams? filteringParams = null)
+        [FromQuery] FilteringParams filteringParams = null)
     {
         if (pagingParams == null)
         {
@@ -53,7 +53,7 @@ public class IncomesController : ControllerBase
         }
 
         var result = await _iIncomeService
-            .GetIncomesAggregatedByPageAsync(profileId, pagingParams, filteringParams);
+            .GetIncomesAggregatedByPageAsync(ProfileId, pagingParams, filteringParams);
 
         if (result.ProcessStatus == ProcessStatus.UserError)
         {
@@ -77,12 +77,13 @@ public class IncomesController : ControllerBase
     #endregion
 
     #region CRUD operations
-    // POST: api/profile/{profileId}/incomes
+    // POST: api/incomes
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
-    public async Task<IActionResult> AddIncome(Guid profileId,
+    public async Task<IActionResult> AddIncome(
+        [FromHeader] Guid ProfileId,
         [FromBody] AddUpdateIncomeDTO addIncome)
     {
         if (!ModelState.IsValid)
@@ -90,7 +91,7 @@ public class IncomesController : ControllerBase
             return UnprocessableEntity(ModelState);
         }
 
-        var result = await _iIncomeService.AddIncomeAsync(profileId, addIncome);
+        var result = await _iIncomeService.AddIncomeAsync(ProfileId, addIncome);
         
         if (result.ProcessStatus == ProcessStatus.UserError)
         {
@@ -101,13 +102,14 @@ public class IncomesController : ControllerBase
         return NoContent();
     }
 
-    // PUT: api/profile/{profileId}/incomes/{id}
+    // PUT: api/incomes/{id}
     [HttpPut("{id}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
     [ProducesResponseType(StatusCodes.Status409Conflict)]
-    public async Task<IActionResult> UpdateIncome(Guid profileId,
-        Guid id, 
+    public async Task<IActionResult> UpdateIncome(
+        [FromHeader] Guid ProfileId,
+        [FromQuery] Guid id, 
         [FromBody] AddUpdateIncomeDTO updatedIncome)
     {
         if (!ModelState.IsValid)
@@ -115,7 +117,7 @@ public class IncomesController : ControllerBase
             return UnprocessableEntity(ModelState);
         }
 
-        var result = await _iIncomeService.UpdateIncomeAsync(profileId, id, updatedIncome);
+        var result = await _iIncomeService.UpdateIncomeAsync(ProfileId, id, updatedIncome);
         
         if (result.ProcessStatus == ProcessStatus.UserError)
         {
@@ -126,7 +128,7 @@ public class IncomesController : ControllerBase
         return NoContent();
     }
     
-    // DELETE: api/profile/{profileId}/incomes/{id}
+    // DELETE: api/incomes/{id}
     [HttpDelete("{id}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]

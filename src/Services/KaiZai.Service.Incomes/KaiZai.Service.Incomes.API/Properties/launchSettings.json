@@ -5,12 +5,16 @@
       "launchBrowser": true,
       "applicationUrl": "http://localhost:5055"
     },
-    "KaiZai.Service.Incomes.API_Swagger": {
+    "KaiZai.Service.Incomes.SwaggerUI": {
       "commandName": "Project",
       "dotnetRunMessages": true,
       "launchBrowser": true,
-      "launchUrl": "swagger",
-      "applicationUrl": "https://localhost:7130"
+      "launchUrl": "incomes",
+      "externalUrlConfiguration": true,
+      "applicationUrl": "https://localhost:7150",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      }
     },
   }
 }
