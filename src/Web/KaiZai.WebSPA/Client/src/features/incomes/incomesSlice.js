@@ -1,130 +1,112 @@
-import agent from "../../app/api/agent";
-import { createAsyncThunk, createEntityAdapter, createSlice } from "@reduxjs/toolkit";
+import { createSlice, createEntityAdapter, createSelector } from "@reduxjs/toolkit";
+import { apiSlice } from "../../app/api/apiSlice.js";
+// import { sub } from 'date-fns';
 
 const incomesAdapter = createEntityAdapter();
 
-function getAxiosParams(pagingParams) {
-    const params = new URLSearchParams();
-    params.append('pageNumber', pagingParams.pageNumber.toString());
-    params.append('pageSize', pagingParams.pageSize.toString());
-    params.append('startDate', pagingParams.startDate);
-    params.append('endDate', pagingParams.endDate);
-    return params;
+const initialState = incomesAdapter.getInitialState({
+    incomesLoaded: false,
+    filtersLoaded: false,
+    pagingParams: initPaginationParams(),
+    filteringParams: initFilteringParams(),
+    metaData: null
+});
+
+function getDefaultDate (isEndPeriod = false) {
+    const date = new Date(Date.now());
+    const year = date.getFullYear()-1;
+    const month = String(date.getMonth() + (isEndPeriod ? 12 : 1)).padStart(2, '0');
+    const day = String(date.getDate()+6).padStart(2, '0');
+
+    return `${year}-${month}-${day}`;
 }
 
-// export const fetchIncomesAsync = createAsyncThunk('catalog/fetchIncomesAsync', async (_, thunkAPI) => {
-//     const params = getAxiosParams(thunkAPI.getState().catalog.productParams)
-//     try {
-//         var response = await agent.Catalog.list(params);
-//         thunkAPI.dispatch(setMetaData(response.metaData));
-//         return response.items;
-//     } catch (error) {
-//         return thunkAPI.rejectWithValue({ error: error.data });
-//     }
-// });
-
-// export const fetchIncomeAsync = createAsyncThunk('catalog/fetchIncomeAsync', async (productId, thunkAPI) => {
-//     try {
-//         const product = await agent.Catalog.details(productId);
-//         return product;
-//     } catch (error) {
-//         return thunkAPI.rejectWithValue({ error: error.data });
-//     }
-// });
-
-export const fetchIncomesAsync = createAsyncThunk(
-    'incomes', async (_, thunkAPI) => {
-        const params = getAxiosParams(thunkAPI.getState().incomes.pagingParams);
-        try {
-            var response = await agent.Incomes.list(params);
-            //thunkAPI.dispatch(setMetaData(response.metaData));
-            return response.items;
-        } catch (error) {
-            return thunkAPI.rejectWithValue({ error: error.data });
-        }
-        
-    }
-)
-
-function initParams() {
+function initPaginationParams() { 
     return {
         pageNumber: 1,
         pageSize: 25,
-        //ToDo: later read about datetime in javascript
-        // startDate: moment().format(),
-        // endDate: ''
-        // category:
-    };
+     };
 }
 
-export const incomesSlice = createSlice({
-    name: 'incomes',
-    initialState: incomesAdapter.getInitialState({
-        incomesLoaded: false,
-        filtersLoaded: false,
-        status: 'idle',
-        incomeParams: initParams(),
-        metaData: null
-    }),
-    reducers: {
-        setIncomeParams: (state, action) => {
-            state.productsLoaded = false;
-            state.productParams = {...state.productParams, ...action.payload, pageNumber: 1}
-        },
-        setPageNumber: (state, action) => {
-            state.productsLoaded = false;
-            state.productParams = {...state.productParams, ...action.payload}
-        },
-        setMetaData: (state, action) => {
-            state.metaData = action.payload
-        },
-        resetIncomeParams: (state) => {
-            state.productParams = initParams()
-        },
-        setIncome: (state, action) => {
-            incomesAdapter.upsertOne(state, action.payload);
-            state.productsLoaded = false;
-        },
-        removeIncome: (state, action) => {
-            incomesAdapter.removeOne(state, action.payload);
-            state.productsLoaded = false;
-        }
-    },
-    extraReducers: (builder => {
-        builder.addCase(fetchIncomesAsync.pending, (state, action) => {
-            state.status = 'pendingFetchIncomes'
-        });
-        builder.addCase(fetchIncomesAsync.fulfilled, (state, action) => {
-            incomesAdapter.setAll(state, action.payload);
-            state.status = 'idle';
-            state.productsLoaded = true;
-        });
-        builder.addCase(fetchIncomesAsync.rejected, (state, action) => {
-            console.log(action.payload);
-            state.status = 'idle';
-        });
-        // builder.addCase(fetchIncomeAsync.pending, (state) => {
-        //     state.status = 'pendingFetchIncome';
-        // });
-        // builder.addCase(fetchIncomeAsync.fulfilled, (state, action) => {
-        //     incomesAdapter.upsertOne(state, action.payload);
-        //     state.status = 'idle';
-        // });
-        // builder.addCase(fetchIncomeAsync.rejected, (state, action) => {
-        //     console.log(action);
-        //     state.status = 'idle';
-        // });
-        // builder.addCase(fetchFilters.pending, (state) => {
-        //     state.status = 'pendingFetchFilters';
-        // });
-        // builder.addCase(fetchFilters.fulfilled, (state, action) => {
-        //     state.brands = action.payload.brands;
-        //     state.types = action.payload.types;
-        //     state.status = 'idle';
-        //     state.filtersLoaded = true;
-        // });
-        // builder.addCase(fetchFilters.rejected, (state) => {
-        //     state.status = 'idle';
-        // });
+function initFilteringParams() { 
+    return {
+        startDate: getDefaultDate(false),
+        endDate: getDefaultDate(true)
+    }
+}
+
+const featureBaseUrlPath = '/incomes';
+
+export const extendedApiSlice = apiSlice.injectEndpoints({
+    endpoints: builder => ({
+        //api/incomes?pageNumber=1&pageSize=10&startDate=2023-01-01T00:00:00&endDate=2023-06-30T23:59:59
+        getPaginatedIncomes: builder.query({
+            query() {
+                const pagingParams = initialState.pagingParams;
+                const filteringParams = initialState.filteringParams;
+                return `${featureBaseUrlPath}/?pageNumber=${pagingParams.pageNumber}&pageSize=${pagingParams.pageSize}&startDate=${filteringParams.startDate}&endDate=${filteringParams.endDate}`;
+            },
+            onQueryStarted: async (id, { queryFulfilled }) => {
+                const { data } = await queryFulfilled;
+                incomesAdapter.setAll(initialState.entities, data);
+                incomesAdapter.setOne(initialState.metaData, data.metaData)
+            },
+            providesTags: (result) => [
+                { type: 'Incomes', id: "LIST" },
+                ...result.ids.map(id => ({ type: 'Income', id }))
+            ]
+        })
     })
-})
+});
+
+ export const incomesSlice = createSlice({
+     name: 'incomes',
+     initialState: initialState,
+     reducers: {
+         setPaginationParams: (state, action) => {
+            state.incomesLoaded = false;
+            state.incomeParams = {...state.incomeParams, ...action.payload, pageNumber: 1}
+         },
+          setPageNumber: (state, action) => {
+              state.incomesLoaded = false;
+              state.incomeParams = {...state.incomeParams, ...action.payload}
+          },
+          setMetaData: (state, action) => {
+              state.metaData = action.payload
+          },
+         // resetIncomeParams: (state) => {
+         //     state.incomeParams = initParams()
+         // },
+         // setIncome: (state, action) => {
+         //     incomesAdapter.upsertOne(state, action.payload);
+         //     state.productsLoaded = false;
+         // },
+         // removeIncome: (state, action) => {
+         //     incomesAdapter.removeOne(state, action.payload);
+         //     state.productsLoaded = false;
+         // }
+     },  
+ })
+
+export const { setPaginationParams, setPageNumber, setMetaData } = incomesSlice.actions
+
+export const {
+    useGetPaginatedIncomesQuery,
+    useGetPostsByUserIdQuery,
+} = extendedApiSlice
+
+export const selectIncomesResult = extendedApiSlice.endpoints.getPaginatedIncomes.select()
+
+// Creates memoized selector
+const selectIncomesData = createSelector(
+    selectIncomesResult,
+    incomesResult => incomesResult.data // normalized state object with ids & entities
+)
+
+//getSelectors creates these selectors and we rename them with aliases using destructuring
+export const {
+    selectAll: selectAllIncomes,
+    selectById: selectIncomeById,
+    selectIds: selectIncomeIds
+    // Pass in a selector that returns the posts slice of state
+} = incomesAdapter.getSelectors(state => selectIncomesData(state) ?? initialState.entities)
