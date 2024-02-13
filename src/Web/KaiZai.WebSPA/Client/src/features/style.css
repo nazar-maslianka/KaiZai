@@ -1,0 +1,11 @@
+.sidebar {
+    background: #ffffff00 !important;
+    box-shadow: none !important;
+}
+
+.main-reg {
+    padding: 4% 2%;
+    border-radius: 3%;
+    height: 950px;
+    background-color: rgba(151, 44, 223, 0.253);
+}
