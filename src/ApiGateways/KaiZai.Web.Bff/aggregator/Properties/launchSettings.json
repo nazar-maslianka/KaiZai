@@ -1,0 +1,20 @@
+﻿{
+  "profiles": {
+  "KaiZai.Web.Bff.APIs": {
+    "commandName": "Project",
+    "launchBrowser": true,
+    "applicationUrl": "http://localhost:5146"
+  },
+  "KaiZai.Web.Bff.SwaggerUI": {
+    "commandName": "Project",
+    "dotnetRunMessages": true,
+    "launchBrowser": true,
+    "launchUrl": "web_bff",
+    "externalUrlConfiguration": true,
+    "applicationUrl": "https://localhost:7106",
+    "environmentVariables": {
+      "ASPNETCORE_ENVIRONMENT": "Development"
+    }
+  }
+  }
+}
