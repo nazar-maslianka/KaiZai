@@ -33,12 +33,28 @@ public static class Mappings
             Amount = incomeDTOBALayer.Amount
         };
 
+    public static IncomeShortDTO ToGrpcIncomeShortDTO(this BALayerDTOs.IncomeShortDTO incomeShortDTOBALayer)
+        => new IncomeShortDTO
+        {
+            Id = incomeShortDTOBALayer.Id,
+            Category = incomeShortDTOBALayer.Category.ToCategoryShortDTOGrpc(),
+            IncomeDate = Timestamp.FromDateTimeOffset(incomeShortDTOBALayer.IncomeDate),
+            Amount = incomeShortDTOBALayer.Amount
+        };
+
     public static CategoryDTO ToCategoryDTOGrpc(this BALayerDTOs.CategoryDTO categoryDTOBALayer)
         => new CategoryDTO
         {
             Id = categoryDTOBALayer.Id,
             Name = categoryDTOBALayer.Name,
             CategoryType = categoryDTOBALayer.CategoryType.ToCategoryTypeGrpc()
+        };
+
+    public static CategoryShortDTO ToCategoryShortDTOGrpc(this BALayerDTOs.CategoryShortDTO categoryShortDTOBALayer)
+        => new CategoryShortDTO
+        {
+            Id = categoryShortDTOBALayer.Id,
+            Name = categoryShortDTOBALayer.Name
         };
 
     public static BALayerCore.FilteringParams ToBALayerFilteringParams(this FilteringParams filterParamsGrpc)
