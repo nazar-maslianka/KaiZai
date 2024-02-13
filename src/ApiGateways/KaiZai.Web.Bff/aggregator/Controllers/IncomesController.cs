@@ -10,6 +10,7 @@ namespace KaiZai.Web.HttpAggregator.Controllers;
 [Route("api/[controller]")]
 public class IncomesController : ControllerBase
 {
+    private readonly Guid profileIdC = new Guid("a476e83e-3ecc-4708-8880-af88c4dd04da");
     private readonly IIncomeService _iIncomes;
     public IncomesController(
         IIncomeService iIncomes)
@@ -39,7 +40,7 @@ public class IncomesController : ControllerBase
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<PagedDataItemsList<IncomeDataItem>>> GetIncomesAggregatedByPageAsync(
-        [FromHeader] Guid profileId,
+        [FromHeader] Guid ProfileId,
         [FromQuery] PagingParams pagingParams,
         [FromQuery] FilteringParams filteringParams = null)
     {
@@ -50,11 +51,11 @@ public class IncomesController : ControllerBase
 
         var pagedIncomeDataItemsList = await _iIncomes
         .GetPagedIncomes(new GetPagedIncomesRequest(
-            profileId, 
+            ProfileId, 
             pagingParams, 
             filteringParams ?? new FilteringParams()));
 
-        Response.Headers.Add("Pagination", 
+        Response.Headers.Add("Metadata", 
             JsonSerializer.Serialize(pagedIncomeDataItemsList.Metadata));
 
         return Ok(pagedIncomeDataItemsList);

@@ -1,3 +1,4 @@
+using KaiZai.Web.HttpAggregator.Config;
 using KaiZai.Web.HttpAggregator.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -16,6 +17,9 @@ builder.Services.AddCors(options =>
         .AllowAnyHeader()
         .AllowCredentials());
 });
+
+     builder.Services.AddOptions();
+        builder.Services.Configure<UrlsConfig>(builder.Configuration.GetSection("Urls"));
 
 builder.Services.AddGrpcServices();
 

@@ -3,6 +3,7 @@ using KaiZai.Web.HttpAggregator.Models;
 using GrpcIncomes;
 using Google.Protobuf.WellKnownTypes;
 using KaiZai.Web.HttpAggregator.Grpc;
+using Grpc.Additional.Types;
 
 namespace KaiZai.Web.HttpAggregator.Services;
 
@@ -23,8 +24,9 @@ public sealed class IncomeService : IIncomeService
          _logger.LogDebug("grpc client created, request = {@id}", incomeId);
         var grpcIncomeDTO = await _incomesClient.GetIncomeByIdAsync(new GetIncomeByIdRequest { IncomeId = incomeId });
         _logger.LogDebug("grpc response {@response}", grpcIncomeDTO);
-        
-        return MapToIncomeDataItem(grpcIncomeDTO);
+
+        throw new NotImplementedException();
+        // MapToIncomeDataItem(grpcIncomeDTO);
     }
 
     public async Task<PagedDataItemsList<IncomeDataItem>> GetPagedIncomes(GetPagedIncomesRequest request)
@@ -33,7 +35,7 @@ public sealed class IncomeService : IIncomeService
         var grpcIncomesAggregatedByPageResult = await _incomesClient.GetIncomesAggregatedByPageAsync(grpcGetIncomesAggregatedByPageRequest);
 
         var incomeDataItems = grpcIncomesAggregatedByPageResult.PagedList.Items
-            .Select(x => MapToIncomeDataItem(MessageConverters.DeserializeAny<IncomeDTO>(x)));
+            .Select(x => MapToIncomeDataItem(request.ProfileId, MessageConverters.DeserializeAny<IncomeShortDTO>(x)));
 
         return new PagedDataItemsList<IncomeDataItem>(incomeDataItems ?? Enumerable.Empty<IncomeDataItem>(), 
             grpcIncomesAggregatedByPageResult.PagedList.Metadata.TotalCount,
@@ -73,20 +75,20 @@ public sealed class IncomeService : IIncomeService
     }
 
 
-    private IncomeDataItem MapToIncomeDataItem(IncomeDTO incomeGrpcDTO)  
+    private IncomeDataItem MapToIncomeDataItem(Guid profileId, IncomeShortDTO incomeShortGrpcDTO)  
     {
-        if (incomeGrpcDTO == null)
+        if (incomeShortGrpcDTO == null)
         {
             return null;
         }
 
         return new IncomeDataItem(
-            incomeGrpcDTO.Id,
-            incomeGrpcDTO.ProfileId,
-            incomeGrpcDTO.Category.Id,
-            incomeGrpcDTO.IncomeDate.ToDateTimeOffset(),
-            incomeGrpcDTO.Description,
-            incomeGrpcDTO.Amount
+            incomeShortGrpcDTO.Id,
+            profileId,
+            incomeShortGrpcDTO.Category.Id,
+            incomeShortGrpcDTO.IncomeDate.ToDateTimeOffset(),
+            "...",
+            incomeShortGrpcDTO.Amount
         );
     }
 
