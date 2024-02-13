@@ -1,4 +1,5 @@
 using System.Text.Json;
+using Google.Protobuf;
 using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
 using KaiZai.Service.Incomes.API.Grpc;
@@ -104,8 +105,9 @@ public sealed partial class IncomesGrpcService : IncomesGrpc.IncomesGrpcBase
 
         var pagedListResult = new PagedList();
         pagedListResult.Metadata = result.Value.Metadata.ToMetadataGrpc();
+        
         var items = result.Value
-            .Select(x => Any.Pack((Google.Protobuf.IMessage)x));
+            .Select(x => Any.Pack(x.ToGrpcIncomeShortDTO()));
         
         pagedListResult.Items.AddRange(items);
 
