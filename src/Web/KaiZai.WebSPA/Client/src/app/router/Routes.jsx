@@ -1,4 +1,3 @@
-import Catalog from "../../features/catalog/Catalog";
 // import ProductDetails from "../../features/catalog/ProductDetails";
 // import CheckoutWrapper from "../../features/checkout/CheckoutWrapper";
 // import ContactPage from "../../features/contact/ContactPage";
@@ -6,7 +5,7 @@ import Catalog from "../../features/catalog/Catalog";
 // import NotFound from "../errors/NotFound";
 // import ServerError from "../errors/ServerError";
 import App from "../layout/App";
-import IncomeCard from "../../features/incomes/IncomeCard";
+import IncomesTransactions from "../../features/incomes/IncomesTransactions";
 // import RequireAuth from "./RequireAuth";
 
 export const router = createBrowserRouter([
@@ -23,7 +22,7 @@ export const router = createBrowserRouter([
             // {element: <RequireAuth roles={['Admin']} />, children: [
             //     {path: 'inventory', element: <Inventory />},
             // ]},
-            {path: 'incomes', element: <IncomeCard />},
+            {path: 'incomes', element: <IncomesTransactions />},
             // {path: 'catalog/:id', element: <ProductDetails />},
             // {path: 'about', element: <AboutPage />},
             // {path: 'contact', element: <ContactPage />},

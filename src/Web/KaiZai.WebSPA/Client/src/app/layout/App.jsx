@@ -2,17 +2,14 @@
 import '../../features/style.css'
 
 import './App.css'
-import Main from '../../features/Main.jsx'
 // import MainAppMenu from '../../features/MainAppMenu.jsx'
-import IncomeCard from '../../features/incomes/IncomeCard.jsx'
+import IncomesTransactions from '../../features/incomes/IncomesTransactions'
 
 function App() {
   return (
     <>
       {/* Sidebar */}
-      <IncomeCard/>
-      {/* Main Content */}
-      <Main/>
+      <IncomesTransactions/>
     </>
   )
 }
