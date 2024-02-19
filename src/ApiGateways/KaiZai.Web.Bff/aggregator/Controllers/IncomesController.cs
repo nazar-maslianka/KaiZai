@@ -39,7 +39,7 @@ public class IncomesController : ControllerBase
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<ActionResult<PagedDataItemsList<IncomeDataItem>>> GetIncomesAggregatedByPageAsync(
+    public async Task<ActionResult<DataPage<IncomeDataItem>>> GetIncomesAggregatedByPageAsync(
         [FromHeader] Guid ProfileId,
         [FromQuery] PagingParams pagingParams,
         [FromQuery] FilteringParams filteringParams = null)

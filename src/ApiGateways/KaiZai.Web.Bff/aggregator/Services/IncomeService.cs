@@ -29,7 +29,7 @@ public sealed class IncomeService : IIncomeService
         // MapToIncomeDataItem(grpcIncomeDTO);
     }
 
-    public async Task<PagedDataItemsList<IncomeDataItem>> GetPagedIncomes(GetPagedIncomesRequest request)
+    public async Task<DataPage<IncomeDataItem>> GetPagedIncomes(GetPagedIncomesRequest request)
     {
         var grpcGetIncomesAggregatedByPageRequest = MapToGrpcGetIncomesAggregatedByPageRequest(request);
         var grpcIncomesAggregatedByPageResult = await _incomesClient.GetIncomesAggregatedByPageAsync(grpcGetIncomesAggregatedByPageRequest);
@@ -37,7 +37,7 @@ public sealed class IncomeService : IIncomeService
         var incomeDataItems = grpcIncomesAggregatedByPageResult.PagedList.Items
             .Select(x => MapToIncomeDataItem(request.ProfileId, MessageConverters.DeserializeAny<IncomeShortDTO>(x)));
 
-        return new PagedDataItemsList<IncomeDataItem>(incomeDataItems ?? Enumerable.Empty<IncomeDataItem>(), 
+        return new DataPage<IncomeDataItem>(incomeDataItems ?? Enumerable.Empty<IncomeDataItem>(), 
             grpcIncomesAggregatedByPageResult.PagedList.Metadata.TotalCount,
             grpcIncomesAggregatedByPageResult.PagedList.Metadata.CurrentPage,
             grpcIncomesAggregatedByPageResult.PagedList.Metadata.PageSize);
