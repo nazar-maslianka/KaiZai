@@ -3,7 +3,10 @@
   "KaiZai.Web.Bff.APIs": {
     "commandName": "Project",
     "launchBrowser": true,
-    "applicationUrl": "http://localhost:5146"
+    "applicationUrl": "http://localhost:5146",
+    "environmentVariables": {
+      "ASPNETCORE_ENVIRONMENT": "Development"
+    }
   },
   "KaiZai.Web.Bff.SwaggerUI": {
     "commandName": "Project",
