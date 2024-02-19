@@ -17,6 +17,6 @@ public interface IIncomeService
 
     public Task<IncomeDataItem> GetIncomeById(Guid incomeId);
 
-    public Task<PagedDataItemsList<IncomeDataItem>> GetPagedIncomes(
+    public Task<DataPage<IncomeDataItem>> GetPagedIncomes(
         GetPagedIncomesRequest request);
 }
