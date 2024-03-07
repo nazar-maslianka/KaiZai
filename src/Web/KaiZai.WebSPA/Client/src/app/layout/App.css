@@ -1,8 +1,11 @@
 #root {
   max-width: 1280px;
-  margin: 0 16rem;
-  padding: 1rem;
+  padding: 10px !important;
   text-align: center;
+}
+
+#main-container {
+  margin: 2% 17.7rem 2%;
 }
 
 .logo {
@@ -31,12 +34,4 @@
   a:nth-of-type(2) .logo {
     animation: logo-spin infinite 20s linear;
   }
-}
-
-.card {
-  padding: 2em;
-}
-
-.read-the-docs {
-  color: #888;
 }

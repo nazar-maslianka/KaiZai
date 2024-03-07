@@ -1,0 +1,17 @@
+/*******************************
+         Site Overrides
+*******************************/
+
+.ui.menu.fixed,
+{
+  border-radius: 15px !important;
+}
+
+.ui.menu.fixed .item:first-child {
+  border-radius: 15px 15px 0px 0px !important;
+}
+
+.ui[class*="left fixed"].menu {
+  top: 2%;
+  height: 96%;
+}

@@ -1,0 +1,7 @@
+/*******************************
+    User Variable Overrides
+*******************************/
+@invertedActiveColor: #dcd3e0;
+@itemTextColor: #dcd3e0;
+@invertedActiveHoverColor: #dcd3e0;
+@hoverItemTextColor: #dcd3e0;
