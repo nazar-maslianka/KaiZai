@@ -1,11 +1,17 @@
-.sidebar {
-    background: #ffffff00 !important;
-    box-shadow: none !important;
+.centered-chart {
+    margin: auto;
+    height: 20rem;
+    width: 20rem;
 }
 
-.main-reg {
-    padding: 4% 2%;
-    border-radius: 3%;
-    height: 950px;
-    background-color: rgba(151, 44, 223, 0.253);
+.feature-content-section {
+    border-radius: 15px;
+    background: #5f1a95;
+    padding: 1.5em;
 }
+
+.scrolled-list {
+    height: 100%;
+    overflow: scroll;
+  }
+  
