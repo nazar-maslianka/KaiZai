@@ -1,112 +1,141 @@
-import { createSlice, createEntityAdapter, createSelector } from "@reduxjs/toolkit";
+/* eslint-disable no-unused-vars */
+import { createEntityAdapter, createSelector, createSlice, useDispatch } from "@reduxjs/toolkit";
 import { apiSlice } from "../../app/api/apiSlice.js";
-// import { sub } from 'date-fns';
+import { format, subMonths, startOfMonth, isFirstDayOfMonth } from "date-fns";
 
-const incomesAdapter = createEntityAdapter();
-
-const initialState = incomesAdapter.getInitialState({
-    incomesLoaded: false,
-    filtersLoaded: false,
-    pagingParams: initPaginationParams(),
-    filteringParams: initFilteringParams(),
-    metaData: null
+// Entity adapter
+const incomesAdapter = createEntityAdapter({
+  selectId: (income) => income.id
 });
 
-function getDefaultDate (isEndPeriod = false) {
-    const date = new Date(Date.now());
-    const year = date.getFullYear()-1;
-    const month = String(date.getMonth() + (isEndPeriod ? 12 : 1)).padStart(2, '0');
-    const day = String(date.getDate()+6).padStart(2, '0');
+// Initial state for incomes data view settings
+const incomesViewSettingsInitialState = {
+  incomesLoaded: false,
+  filtersLoaded: false,
+  pagingParams: initPaginationParams(),
+  filteringParams: initFilteringParams(),
+};
 
-    return `${year}-${month}-${day}`;
+// Initial state for incomes data
+const incomesInitialState = incomesAdapter.getInitialState({
+  metadata: null
+});
+
+//TODO: change test values to original 
+// Helper function to get default date limit
+function getDefaultDateLimit(isLowerLimit = true) {
+  let newDate = new Date(Date.now());
+
+  if (isLowerLimit && !isFirstDayOfMonth(newDate)) {
+    newDate = new Date("2023-01-01");
+    //subMonths(startOfMonth(newDate),1);
+  } else if (isLowerLimit) {
+    newDate = new Date("2023-01-01");
+    //subMonths(newDate,1);
+  }
+  console.log(newDate);
+  return format(newDate, 'yyyy-MM-dd');
 }
 
-function initPaginationParams() { 
-    return {
-        pageNumber: 1,
-        pageSize: 25,
-     };
+const formatDateToString = (dateValue) => format(dateValue, 'yyyy-MM-dd');
+
+// Helper function to initialize pagination parameters
+function initPaginationParams() {
+  return {
+    pageNumber: 1,
+    pageSize: 25,
+  };
 }
 
-function initFilteringParams() { 
-    return {
-        startDate: getDefaultDate(false),
-        endDate: getDefaultDate(true)
-    }
+// Helper function to initialize filtering parameters
+function initFilteringParams() {
+  return {
+    startDate: getDefaultDateLimit(),
+    endDate: getDefaultDateLimit(false)
+  };
 }
 
+// API endpoint configuration
 const featureBaseUrlPath = '/incomes';
 
 export const extendedApiSlice = apiSlice.injectEndpoints({
-    endpoints: builder => ({
-        //api/incomes?pageNumber=1&pageSize=10&startDate=2023-01-01T00:00:00&endDate=2023-06-30T23:59:59
-        getPaginatedIncomes: builder.query({
-            query() {
-                const pagingParams = initialState.pagingParams;
-                const filteringParams = initialState.filteringParams;
-                return `${featureBaseUrlPath}/?pageNumber=${pagingParams.pageNumber}&pageSize=${pagingParams.pageSize}&startDate=${filteringParams.startDate}&endDate=${filteringParams.endDate}`;
-            },
-            onQueryStarted: async (id, { queryFulfilled }) => {
-                const { data } = await queryFulfilled;
-                incomesAdapter.setAll(initialState.entities, data);
-                incomesAdapter.setOne(initialState.metaData, data.metaData)
-            },
-            providesTags: (result) => [
-                { type: 'Incomes', id: "LIST" },
-                ...result.ids.map(id => ({ type: 'Income', id }))
-            ]
-        })
+  tagTypes: ['Post'],
+  endpoints: (builder) => ({
+    getPaginatedIncomes: builder.query({
+      query({ pagingParams, filteringParams }) {
+        console.log(pagingParams);
+        const { pageNumber = 1, pageSize = 25 } = pagingParams || {};
+        const { startDate = getDefaultDateLimit(), endDate = getDefaultDateLimit(false) } = filteringParams || {};
+        return `${featureBaseUrlPath}?pageNumber=${pageNumber}&pageSize=${pageSize}&startDate=${startDate}&endDate=${endDate}`;
+      },
+      transformResponse: (responseData) => {
+        const { items } = responseData;
+        return incomesAdapter.setAll(incomesInitialState, items);
+      },
+      onQueryStarted: async (id, { dispatch, queryFulfilled }) => {
+        const data = await queryFulfilled;
+        dispatch(setMetadata(data));
+      }
     })
+  })
 });
 
- export const incomesSlice = createSlice({
-     name: 'incomes',
-     initialState: initialState,
-     reducers: {
-         setPaginationParams: (state, action) => {
-            state.incomesLoaded = false;
-            state.incomeParams = {...state.incomeParams, ...action.payload, pageNumber: 1}
-         },
-          setPageNumber: (state, action) => {
-              state.incomesLoaded = false;
-              state.incomeParams = {...state.incomeParams, ...action.payload}
-          },
-          setMetaData: (state, action) => {
-              state.metaData = action.payload
-          },
-         // resetIncomeParams: (state) => {
-         //     state.incomeParams = initParams()
-         // },
-         // setIncome: (state, action) => {
-         //     incomesAdapter.upsertOne(state, action.payload);
-         //     state.productsLoaded = false;
-         // },
-         // removeIncome: (state, action) => {
-         //     incomesAdapter.removeOne(state, action.payload);
-         //     state.productsLoaded = false;
-         // }
-     },  
- })
+const setMetadata = ({ metadata }) => ({ type: 'SET_METADATA', metadata });
 
-export const { setPaginationParams, setPageNumber, setMetaData } = incomesSlice.actions
+const incomesPartialReducer = (state = incomesInitialState, action) => {
+  switch (action.type) {
+    case 'SET_METADATA':
+      return { ...state, metadata: action.payload };
+    default:
+      return state;
+  }
+};
 
+//Incomes data view settings slice(mostly for IncomesTransactions page)
+const incomesDataViewSettingsSlice = createSlice({
+  name: 'incomesDataViewSettings',
+  initialState: incomesViewSettingsInitialState,
+  reducers: {
+    setPageSize: (state, action) => {
+      state.pagingParams.pageSize = action.payload;
+    },
+    setPageNumber: (state, action) => {
+      state.pagingParams.pageNumber = action.payload;
+    },
+    setDateRange: (state, action) => {
+      console.log(action.payload);
+      state.filteringParams = { ...state.filteringParams, ...action.payload };
+    }
+  },
+});
+
+// Export actions from dataViewSettingsSlice
 export const {
-    useGetPaginatedIncomesQuery,
-    useGetPostsByUserIdQuery,
-} = extendedApiSlice
+  setPageSize,
+  setPageNumber,
+  setDateRange
+} = incomesDataViewSettingsSlice.actions;
 
-export const selectIncomesResult = extendedApiSlice.endpoints.getPaginatedIncomes.select()
-
-// Creates memoized selector
-const selectIncomesData = createSelector(
-    selectIncomesResult,
-    incomesResult => incomesResult.data // normalized state object with ids & entities
-)
-
-//getSelectors creates these selectors and we rename them with aliases using destructuring
+// Export API endpoints
 export const {
-    selectAll: selectAllIncomes,
-    selectById: selectIncomeById,
-    selectIds: selectIncomeIds
-    // Pass in a selector that returns the posts slice of state
-} = incomesAdapter.getSelectors(state => selectIncomesData(state) ?? initialState.entities)
+  useGetPaginatedIncomesQuery
+} = extendedApiSlice;
+
+const selectIncomesData = (state, parameters) => {
+  const selectResult = extendedApiSlice.endpoints.getPaginatedIncomes.select(parameters);
+  const incomesResult = selectResult(state);
+  //TODO: think about another statuses
+  if (incomesResult.status === 'fulfilled') {
+    return incomesResult.data;
+  }
+};
+
+export const selectAllIncomes = createSelector(
+  [selectIncomesData],
+  (incomesResult) => {
+    const data = incomesResult ? incomesAdapter.getSelectors().selectAll(incomesResult) : [];
+    return data;
+  }
+);
+
+export default incomesDataViewSettingsSlice.reducer;
