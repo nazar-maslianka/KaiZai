@@ -1,16 +1,20 @@
-// import { useState } from 'react'
 import '../../features/style.css'
-
 import './App.css'
-// import MainAppMenu from '../../features/MainAppMenu.jsx'
+import {
+  Container,
+} from "semantic-ui-react";
 import IncomesTransactions from '../../features/incomes/IncomesTransactions'
+import MainMenu from '../layout/MainMenu'
 
 function App() {
   return (
-    <>
-      {/* Sidebar */}
-      <IncomesTransactions/>
-    </>
+    //TODO: add centering for big resolutions and styles for different resolutions
+      <div id="main-container">
+        <MainMenu  />
+        <Container>
+          <IncomesTransactions />
+        </Container>
+    </div>
   )
 }
 
