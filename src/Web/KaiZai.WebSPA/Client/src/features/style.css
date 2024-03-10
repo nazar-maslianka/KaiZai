@@ -1,7 +1,7 @@
 .centered-chart {
     margin: auto;
-    height: 20rem;
-    width: 20rem;
+    height: 19rem;
+    width: 19rem;
 }
 
 .feature-content-section {
@@ -11,7 +11,10 @@
 }
 
 .scrolled-list {
-    height: 100%;
-    overflow: scroll;
-  }
-  
+    height: 200px;
+    overflow: auto;
+}
+
+.react-datepicker__day--selected, .react-datepicker__day--in-selecting-range, .react-datepicker__day--in-range, .react-datepicker__month-text--selected, .react-datepicker__month-text--in-selecting-range, .react-datepicker__month-text--in-range, .react-datepicker__quarter-text--selected, .react-datepicker__quarter-text--in-selecting-range, .react-datepicker__quarter-text--in-range, .react-datepicker__year-text--selected, .react-datepicker__year-text--in-selecting-range, .react-datepicker__year-text--in-range {
+    background: #5f1a95 !important;
+}
