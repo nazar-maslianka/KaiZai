@@ -6,6 +6,7 @@
 // import ServerError from "../errors/ServerError";
 import App from "../layout/App";
 import IncomesTransactions from "../../features/incomes/IncomesTransactions";
+import Dashboard from "../../features/dashboard/Dashboard";
 // import RequireAuth from "./RequireAuth";
 
 export const router = createBrowserRouter([
@@ -22,6 +23,7 @@ export const router = createBrowserRouter([
             // {element: <RequireAuth roles={['Admin']} />, children: [
             //     {path: 'inventory', element: <Inventory />},
             // ]},
+            {path: 'dashboard', element: <Dashboard />},
             {path: 'incomes', element: <IncomesTransactions />},
             // {path: 'catalog/:id', element: <ProductDetails />},
             // {path: 'about', element: <AboutPage />},
