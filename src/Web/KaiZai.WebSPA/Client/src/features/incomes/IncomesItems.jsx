@@ -1,26 +1,22 @@
-/* eslint-disable no-unused-vars */
-import React, { useState } from "react";
-import DatePicker from "react-datepicker";
-import { useSelector } from "react-redux";
-import {
-  selectAllIncomes,
-} from "./incomesSlice.js";
+// eslint-disable-next-line no-unused-vars
+import React from "react";
 import {
   Item,
   ItemGroup,
 } from "semantic-ui-react";
+import { usePaginatedIncomes } from "../../app/hooks/usePaginatedIncomes"
 
 export default function IncomesItems() {
-  const paginatedIncomes = useSelector(selectAllIncomes);
+  const { paginatedIncomes } = usePaginatedIncomes();
 
-  const renderedIncomes = paginatedIncomes.map((income) => (
+  const renderedIncomes = paginatedIncomes && paginatedIncomes.map(income =>
+
     <Item key={income.id}>
-      <Item.Image size='small'/>
+      <Item.Image size='small' />
       <Item.Header>{income.incomeDate}</Item.Header>
-      <Item.Description>{income.descrition}</Item.Description>
       <Item.Extra>{income.amount}</Item.Extra>
     </Item>
-  ));
+  );
 
   return (
     <>
